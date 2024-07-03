@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
     image: {
       type: Sequelize.STRING
     },
-    likes: {
+    likeCount: {
       type: Sequelize.INTEGER,
       defaultValue: 0
     }
