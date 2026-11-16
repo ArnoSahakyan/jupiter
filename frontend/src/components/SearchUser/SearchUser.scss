@@ -1,0 +1,118 @@
+@use '@assets/webColors' as *;
+
+.SearchUser {
+  .SearchUser__input {
+    position: relative;
+  }
+
+  .secondary-loader {
+    position: absolute;
+    right: 0;
+    top: 18px;
+    display: block;
+    scale: 0.35;
+  }
+
+  .searchFriend {
+    position: absolute;
+    width: 260px;
+    padding: 15px 18px;
+    font-size: 15px;
+    top: 17px;
+    right: 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+    border: none;
+    border-bottom: 2px solid $dark-grey;
+    outline: none;
+
+    &:focus {
+      border-bottom: 2px solid $primary;
+    }
+
+    &.inactive {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    &.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &__results {
+    padding: 10px 15px;
+    position: absolute;
+    width: 260px;
+    top: 89px;
+    right: 0;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 2px solid $primary;
+    max-height: 230px;
+    overflow-y: auto;
+
+    .no-users {
+      margin: 0;
+    }
+
+    &.inactive {
+      display: none;
+    }
+
+    &.active {
+      display: flex;
+    }
+
+    .load {
+      color: $primary;
+      font-size: 14px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .SearchUser {
+    padding: 10px;
+    background-color: $primary;
+
+    .secondary-loader {
+      top: -4px;
+      scale: 0.3;
+    }
+
+    a {
+      display: none;
+    }
+
+    .searchFriend {
+      position: static;
+      width: 100%;
+      padding: 10px 18px;
+      border-radius: 10px;
+
+      &.inactive {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    &__results {
+      top: 139px;
+      max-height: unset;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+
+      &.inactive {
+        display: flex;
+      }
+
+    }
+  }
+}

@@ -1,0 +1,137 @@
+@use '@assets/webColors' as *;
+
+.CreatePost {
+  padding: 30px;
+  background-color: $white;
+  border-radius: 5px;
+  display: flex;
+  gap: 20px;
+  position: relative;
+
+  .input-wrapper {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+
+    .error {
+      font-size: 14px;
+      color: $red;
+      position: absolute;
+      // bottom: -25px;
+    }
+  }
+
+  &__img {
+    flex-shrink: 0;
+    width: 57px;
+    height: 57px;
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .preview {
+        width: 100%;
+
+        .file-preview {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .attachement {
+        padding: 5px 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        position: relative;
+        height: 110px;
+        border: 1px solid $grey-bg;
+        border-radius: 5px;
+        overflow: hidden;
+        gap: 20px;
+
+        button {
+          padding: 5px 15px;
+          background-color: $primary;
+          color: $white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+
+          &:disabled {
+            background-color: $primary-disabled;
+            cursor: not-allowed;
+          }
+        }
+
+        .file-input {
+          display: flex;
+          gap: 20px;
+
+          span {
+            font-family: 'Bootstrap-icons';
+            font-size: 18px;
+            cursor: pointer;
+          }
+
+          input {
+            display: none;
+          }
+        }
+      }
+
+      textarea {
+        padding: 10px;
+        width: 100%;
+        height: 70%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        outline: none;
+        border: none;
+        resize: none;
+        font-family: "Roboto", sans-serif;
+        font-size: 15px;
+      }
+
+    }
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+  .CreatePost {
+    padding: 20px;
+    width: 100%;
+    gap: 12px;
+
+    .input-wrapper {
+      .error {
+        font-size: 12px;
+      }
+    }
+
+    &__img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}

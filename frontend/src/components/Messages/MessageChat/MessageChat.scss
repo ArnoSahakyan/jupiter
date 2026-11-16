@@ -1,0 +1,41 @@
+@use '@assets/webColors' as *;
+
+.MessageChat {
+  width: 90%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 15px;
+
+  &.user {
+    justify-content: flex-end;
+    margin-left: auto;
+
+    p {
+      background-color: $chat-sent;
+    }
+  }
+
+  img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  p {
+    max-width: 90%;
+    padding: 5px 10px;
+    background-color: $chat-received;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .MessageChat{
+    img{
+      display: none;
+    }
+  }
+  
+}

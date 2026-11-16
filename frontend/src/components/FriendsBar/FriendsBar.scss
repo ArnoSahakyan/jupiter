@@ -1,0 +1,47 @@
+@use '@assets/webColors' as *;
+
+.FriendsBar {
+  position: sticky;
+  top: 67px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: $white;
+  border-radius: 5px;
+  padding: 20px;
+
+  .FriendSkeleton {
+    width: 100%;
+    scale: 0.9;
+    transform-origin: left;
+  }
+
+  &__search {
+    form {
+      input {
+        width: 100%;
+        padding: 5px 10px;
+        border: 1px solid $grey-bg;
+        outline: none;
+      }
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 50px;
+    max-height: 440px;
+    overflow: auto;
+    transition: 200ms;
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+  .FriendsBar {
+    position: static;
+  }
+}
