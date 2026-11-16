@@ -45,7 +45,13 @@
         color: $grey1;
         cursor: pointer;
 
-        &:hover {
+        &:hover,
+        &.active {
+          color: $primary;
+        }
+
+        &:hover,
+        &:focus-visible {
           +.desc {
             opacity: 1;
             visibility: visible;
