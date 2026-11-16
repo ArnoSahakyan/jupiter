@@ -99,6 +99,7 @@ test('Jupiter API end to end', async (t) => {
     const search = await call('GET', `/api/search-user?query=${run}`, { token: alice.accessToken });
     const found = search.data.users.map(user => user.username).sort();
     assert.deepEqual(found, [bob.username, eve.username].sort(), 'finds the others, not yourself');
+    assert.ok(search.data.users.every(user => !('email' in user)), 'search results do not expose emails');
   });
 
   await t.test('posts, likes, comments and replies', async () => {

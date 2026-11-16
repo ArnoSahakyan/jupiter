@@ -28,7 +28,7 @@ exports.getFriends = async (req, res) => {
           [db.Sequelize.Op.in]: friendIds
         }
       },
-      attributes: ['id', 'fname', 'username', 'pfp', 'job', 'email', 'onlineStatus']
+      attributes: ['id', 'fname', 'username', 'pfp', 'job', 'onlineStatus']
     });
 
     // Map users to include friendshipId

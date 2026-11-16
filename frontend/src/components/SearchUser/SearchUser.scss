@@ -1,118 +1,197 @@
 @use '@assets/webColors' as *;
 
+// Desktop: a search button that opens a dropdown card with the field and results.
+// Phones (up to 767px): an always-visible search bar under the purple header.
+
 .SearchUser {
-  .SearchUser__input {
-    position: relative;
-  }
+  position: relative;
 
-  .secondary-loader {
-    position: absolute;
-    right: 0;
-    top: 18px;
-    display: block;
-    scale: 0.35;
-  }
-
-  .searchFriend {
-    position: absolute;
-    width: 260px;
-    padding: 15px 18px;
-    font-size: 15px;
-    top: 17px;
-    right: 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+  &__toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
     border: none;
-    border-bottom: 2px solid $dark-grey;
-    outline: none;
+    border-radius: 10px;
+    background: transparent;
+    color: $dark-grey;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
 
-    &:focus {
-      border-bottom: 2px solid $primary;
+    svg {
+      width: 18px;
+      height: 18px;
     }
 
-    &.inactive {
-      opacity: 0;
-      visibility: hidden;
+    &:hover,
+    &.open {
+      background-color: $grey-bg;
+      color: $primary;
     }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 20;
+    width: 320px;
+    padding: 12px;
+    border-radius: 14px;
+    background-color: $white;
+    box-shadow: 0 12px 32px rgba(23, 12, 48, 0.16), 0 0 0 1px rgba(23, 12, 48, 0.05);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 150ms, transform 150ms, visibility 0s 150ms;
 
     &.active {
       opacity: 1;
       visibility: visible;
+      transform: translateY(0);
+      transition: opacity 150ms, transform 150ms;
+    }
+  }
+
+  &__input {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    > svg {
+      position: absolute;
+      left: 12px;
+      width: 15px;
+      height: 15px;
+      color: $grey1;
+      pointer-events: none;
+    }
+
+    .secondary-loader {
+      position: absolute;
+      right: -6px;
+      top: -12px;
+      scale: 0.3;
+    }
+  }
+
+  .searchFriend {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background-color: $grey-bg;
+    font-family: inherit;
+    font-size: 14px;
+    color: $black;
+    outline: none;
+    transition: border-color 150ms, background-color 150ms;
+
+    &::placeholder {
+      color: $grey1;
+    }
+
+    &:focus {
+      border-color: $primary;
+      background-color: $white;
+    }
+
+    &::-webkit-search-cancel-button {
+      cursor: pointer;
     }
   }
 
   &__results {
-    padding: 10px 15px;
-    position: absolute;
-    width: 260px;
-    top: 89px;
-    right: 0;
-    background-color: $white;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    border-bottom: 2px solid $primary;
-    max-height: 230px;
+    gap: 2px;
+    margin-top: 8px;
+    max-height: 320px;
     overflow-y: auto;
 
     .no-users {
-      margin: 0;
-    }
-
-    &.inactive {
-      display: none;
-    }
-
-    &.active {
-      display: flex;
+      margin: 8px 0;
     }
 
     .load {
+      margin-top: 4px;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
       color: $primary;
-      font-size: 14px;
       text-align: center;
       cursor: pointer;
-      font-weight: 500;
+
+      &:hover {
+        background-color: $grey-bg;
+      }
+    }
+  }
+
+  &__result {
+    padding: 8px;
+    border-radius: 10px;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $grey-bg;
     }
   }
 }
 
 @media screen and (max-width: 767px) {
   .SearchUser {
-    padding: 10px;
+    padding: 10px 16px 14px;
     background-color: $primary;
 
-    .secondary-loader {
-      top: -4px;
-      scale: 0.3;
-    }
-
-    a {
+    &__toggle {
       display: none;
     }
 
-    .searchFriend {
+    &__panel,
+    &__panel.inactive {
       position: static;
       width: 100%;
-      padding: 10px 18px;
-      border-radius: 10px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+    }
 
-      &.inactive {
-        opacity: 1;
-        visibility: visible;
+    .searchFriend {
+      background-color: $white;
+
+      &:focus {
+        border-color: $white;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
       }
     }
 
+    // results float over the page under the purple bar
     &__results {
-      top: 139px;
-      max-height: unset;
+      position: absolute;
+      top: 100%;
       left: 0;
-      width: 100%;
+      right: 0;
       z-index: 10;
-
-      &.inactive {
-        display: flex;
-      }
-
+      margin: 0;
+      padding: 8px 16px 12px;
+      max-height: 60vh;
+      background-color: $white;
+      border-radius: 0 0 14px 14px;
+      box-shadow: 0 12px 24px rgba(23, 12, 48, 0.16);
     }
   }
 }

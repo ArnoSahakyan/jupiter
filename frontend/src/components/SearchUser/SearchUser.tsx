@@ -23,6 +23,7 @@ export default function SearchUser() {
   const limit = 4;
 
   const searchBar = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (searchBar.current && !searchBar.current.contains(event.target as Node)) {
@@ -85,41 +86,69 @@ export default function SearchUser() {
     debouncedSearch(searchTerm, offset);
   };
 
+  // Escape closes the search; opening it on desktop focuses the field.
+  useEffect(() => {
+    if (!searchOpen) return;
+    inputRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setSearchTerm('');
+        setResults(undefined);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [searchOpen]);
+
   return (
     <div className='SearchUser' ref={searchBar}>
-      <a onClick={() => setSearchOpen(!searchOpen)}>
+      <button
+        type='button'
+        className={`SearchUser__toggle ${searchOpen ? 'open' : ''}`}
+        aria-label='Search users'
+        aria-expanded={searchOpen}
+        onClick={() => setSearchOpen(!searchOpen)}
+      >
         <IconSearch />
-      </a>
-      <div className='SearchUser__input'>
-        <input className={`${searchOpen ? 'active' : 'inactive'} searchFriend`}
-          type="text"
-          name="search"
-          id="search"
-          placeholder='Search User'
-          value={searchTerm}
-          onChange={handleChange}
-        />
-        {loading && <SecondaryLoader />}
-      </div>
-      {
-        results &&
-        <div className={`${searchOpen ? 'active' : 'inactive'} SearchUser__results`}>
-          {error && <p>Error: {error}</p>}
-          {
-            !loading && (results.length > 0 ? results.map((user) => (
-              <Link key={user.id} to={profilePath(user.id)} className='profile-link' onClick={() => setSearchOpen(false)}>
-                <Friend user={user} onlyImg={false} />
-              </Link>
-            ))
-              : <p className='no-users'>No Users Available</p>)
-          }
-          {hasMore && (!loading ? (
-            <p className='load' onClick={handleLoadMore}>Load More</p>
-          )
-            : <p className='load'>...Loading</p>)
-          }
+      </button>
+      <div className={`SearchUser__panel ${searchOpen ? 'active' : 'inactive'}`}>
+        <div className='SearchUser__input'>
+          <IconSearch />
+          <input
+            ref={inputRef}
+            className='searchFriend'
+            type="search"
+            name="search"
+            id="search"
+            placeholder='Search people'
+            autoComplete='off'
+            value={searchTerm}
+            onChange={handleChange}
+            onFocus={() => setSearchOpen(true)}
+          />
+          {loading && <SecondaryLoader />}
         </div>
-      }
+        {
+          results &&
+          <div className='SearchUser__results'>
+            {error && <p>Error: {error}</p>}
+            {
+              !loading && (results.length > 0 ? results.map((user) => (
+                <Link key={user.id} to={profilePath(user.id)} className='profile-link SearchUser__result' onClick={() => setSearchOpen(false)}>
+                  <Friend user={user} onlyImg={false} />
+                </Link>
+              ))
+                : <p className='no-users'>No one found</p>)
+            }
+            {hasMore && (!loading ? (
+              <button type='button' className='load' onClick={handleLoadMore}>Load more</button>
+            )
+              : <p className='load'>Loading…</p>)
+            }
+          </div>
+        }
+      </div>
     </div>
   )
 }

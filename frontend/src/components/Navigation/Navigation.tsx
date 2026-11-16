@@ -1,154 +1,123 @@
 import './Navigation.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import ROUTES from '../../routes/routes';
 import BurgerMenu from '../BurgerMenu/BurgerMenu';
-import { getPfp, getStatus } from '../../store/features/userInfo/userInfoSlice';
-import { useState, useEffect, useRef } from 'react';
+import { getName, getPfp, getStatus, getUsername } from '../../store/features/userInfo/userInfoSlice';
 import useAuth from '../../hooks/useAuth';
-import { changeOnlineStatus } from '../../store/features/userInfo/userThunks';
 import Modal from '../shared/Modal/Modal'
 import EditForm from '../EditForm/EditForm';
-import IconHome from '../shared/Icons/IconHome';
 import SearchUser from '../SearchUser/SearchUser';
-import { AppDispatch } from '../../store/setup';
+import StatusSwitch from '../shared/StatusSwitch/StatusSwitch';
+import { appLinks } from '../shared/navLinks';
+import { IconChevronDown, IconEdit, IconLogout, IconUser } from '../shared/Icons/MenuIcons';
 
-export type MenuItem = {
-  id: number;
-  title: string;
-  subtitles: SubMenu[];
-}
-
-type SubMenu = {
-  title: string;
-  link: string;
-}
-
-const onlineStatus: string[] = ['online', 'away', 'offline'];
-
-const dropDownMenu: MenuItem[] = [
-  {
-    id: 1,
-    title: 'Home',
-    subtitles: [
-      {
-        title: 'Home Page',
-        link: ROUTES.HOME
-      },
-      {
-        title: 'News Feed',
-        link: ROUTES.NEWSFEED
-      },
-    ]
-  },
-  {
-    id: 2,
-    title: 'Timeline',
-    subtitles: [
-      {
-        title: 'Timeline Friends',
-        link: '/' + ROUTES.FRIENDS
-      },
-      {
-        title: 'Timeline Photos',
-        link: '/' + ROUTES.PHOTOS
-      },
-      {
-        title: 'Message Box',
-        link: '/' + ROUTES.MESSAGES
-      },
-    ]
-  },
-];
+// Sections shown in the top bar (Photos is a tab on your profile).
+const NAV_SECTIONS = ['News Feed', 'My Timeline', 'Friends', 'Messages'];
+const navLinks = appLinks.filter(link => NAV_SECTIONS.includes(link.title));
 
 export default function Navigation() {
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
-  };
-
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const status = useSelector(getStatus);
   const pfp = useSelector(getPfp);
+  const name = useSelector(getName);
+  const username = useSelector(getUsername);
   const { logout } = useAuth();
+  const location = useLocation();
+  const accountRef = useRef<HTMLDivElement>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const toggleEdit = () => setEditOpen(!editOpen);
 
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-      setStatusOpen(false);
-    }
-  };
+  // The account menu closes on outside click, Escape, or navigating.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointer = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
-      {isOpen && (
-        <Modal toggleModal={toggleModal} isOpen={isOpen}>
+      {editOpen && (
+        <Modal toggleModal={toggleEdit} isOpen={editOpen}>
           <div className="EditForm">
             <h2>Edit Your Info</h2>
-            <EditForm toggleModal={toggleModal} />
+            <EditForm toggleModal={toggleEdit} />
           </div>
         </Modal>
       )}
 
-      <BurgerMenu onEditProfile={toggleModal} />
+      <BurgerMenu onEditProfile={toggleEdit} />
 
-      <div className='Navigation'>
-        <div>
-          <div className="Navigation__logo">
-            <Link to={ROUTES.NEWSFEED}><img src="/logo.svg" alt="Jupiter" /></Link>
-          </div>
-          <ul className='Navigation__menu'>
-            {dropDownMenu.map((menuItem) => (
-              <li key={menuItem.id}>
-                <a href=''>{menuItem.title} <span>&#xF282;</span> </a>
-                <ul className='submenu'>
-                  {menuItem.subtitles.map((subtitle, index) => (
-                    <li key={index}><Link to={subtitle.link}>{subtitle.title}</Link></li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <ul className='Navigation__icons'>
-            <li>
-              <SearchUser />
-            </li>
-            <li>
-              <Link to={ROUTES.HOME}>
-                <IconHome />
-              </Link>
-            </li>
-          </ul>
-
-          <div className="Navigation__user" ref={userMenuRef}>
-            <div onClick={() => setStatusOpen(!statusOpen)} className={`${status} user`}>
-              <img src={pfp} alt="User Profile" />
-            </div>
-            <ul className={`${statusOpen ? 'open' : ''} actions`}>
-              {onlineStatus.map(status => (
-                <li className={`${status} status`} onClick={() => dispatch(changeOnlineStatus({ onlineStatus: status }))} key={status}>{status}</li>
+      <header className='Navigation'>
+        <div className='Navigation__left'>
+          <Link to={ROUTES.NEWSFEED} className="Navigation__logo">
+            <img src="/logo.svg" alt="Jupiter" />
+          </Link>
+          <nav aria-label='Main'>
+            <ul className='Navigation__links'>
+              {navLinks.map(link => (
+                <li key={link.title}>
+                  <NavLink to={link.route} end title={link.title} aria-label={link.title}>
+                    <span className='icon'>{link.icon}</span>
+                    <span className='label'>{link.title}</span>
+                  </NavLink>
+                </li>
               ))}
-              <li><Link to={ROUTES.HOME}><span>&#xF4E1;</span> View Profile</Link></li>
-              <li><a onClick={toggleModal}><span>&#xF4CB;</span> Edit Profile</a></li>
-              <li><a onClick={logout}><span>&#xF4FF;</span> Log Out</a></li>
             </ul>
+          </nav>
+        </div>
+
+        <div className='Navigation__right'>
+          <SearchUser />
+
+          <div className="Navigation__account" ref={accountRef}>
+            <button
+              type='button'
+              className={`Navigation__account-button ${menuOpen ? 'open' : ''}`}
+              aria-haspopup='true'
+              aria-expanded={menuOpen}
+              aria-controls='account-menu'
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <span className={`avatar ${status ?? ''}`}><img src={pfp} alt="" /></span>
+              <span className='name'>{name}</span>
+              <span className='chevron'><IconChevronDown /></span>
+            </button>
+
+            <div id='account-menu' className={`Navigation__menu ${menuOpen ? 'open' : ''}`}>
+              <div className='Navigation__menu-header'>
+                <span className={`avatar ${status ?? ''}`}><img src={pfp} alt="" /></span>
+                <span>
+                  <strong>{name}</strong>
+                  <span>@{username}</span>
+                </span>
+              </div>
+
+              <StatusSwitch />
+
+              <div className='Navigation__menu-items'>
+                <Link to={ROUTES.HOME}><IconUser /> View profile</Link>
+                <button type='button' onClick={() => { setMenuOpen(false); toggleEdit(); }}><IconEdit /> Edit profile</button>
+                <button type='button' className='logout' onClick={() => { setMenuOpen(false); logout(); }}><IconLogout /> Log out</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
     </>
   );
 }

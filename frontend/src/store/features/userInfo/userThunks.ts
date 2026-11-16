@@ -20,7 +20,6 @@ type TimageType = {
 }
 
 export type TsearchedUsers = Tunassocitaed & {
-  email: string;
   onlineStatus: string;
 }
 

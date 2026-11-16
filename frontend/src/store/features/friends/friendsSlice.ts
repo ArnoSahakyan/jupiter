@@ -26,7 +26,6 @@ export type TFriendBack = {
   username: string;
   pfp: string;
   job: string;
-  email: string;
   onlineStatus: string;
   messages: TMessages[];
 }

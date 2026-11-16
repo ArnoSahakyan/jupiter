@@ -18,7 +18,7 @@ export default function Friend({ user, onlyImg }: FriendProps) {
         onlyImg ? null
           : <div className="Friend__content">
             <h6>{user.fname}</h6>
-            <p>{user.email}</p>
+            <p>@{user.username}</p>
           </div>
       }
 

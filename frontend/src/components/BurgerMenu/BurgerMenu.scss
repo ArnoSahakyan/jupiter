@@ -244,56 +244,6 @@ $ease: cubic-bezier(0.32, 0.72, 0, 1);
   &__status {
     padding: 12px 0;
     border-top: 1px solid $grey-bg;
-
-    p {
-      margin: 0 0 8px 4px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: $grey1;
-    }
-
-    div {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      border-radius: 10px;
-      background-color: $grey-bg;
-    }
-
-    button {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 4px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      font-family: inherit;
-      font-size: 13px;
-      text-transform: capitalize;
-      color: $dark-grey;
-      cursor: pointer;
-
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: $offline;
-      }
-
-      &.online .dot { background-color: $online; }
-      &.away .dot { background-color: $away; }
-
-      &.selected {
-        background-color: $white;
-        font-weight: 600;
-        box-shadow: 0 1px 3px rgba(23, 12, 48, 0.12);
-      }
-    }
   }
 
   &__actions {
