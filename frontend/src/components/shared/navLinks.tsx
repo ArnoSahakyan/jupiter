@@ -1,6 +1,6 @@
 import ROUTES from '../../routes/routes'
 
-// The app's main sections, shared by the desktop side bar and the mobile menu.
+// The app's main sections, shared by the desktop navbar and the mobile menu.
 export type TAppLink = {
   title: string;
   route: string;

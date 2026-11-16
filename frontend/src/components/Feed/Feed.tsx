@@ -4,7 +4,8 @@ import { PostState, newsfeedPostsSelector, postCreateLoading, postGetLoading, us
 import { getNewsfeed, getUserPosts } from '../../store/features/post/postThunks';
 import { useEffect } from 'react';
 import Post from '../Post/Post';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import ROUTES from '../../routes/routes';
 import Reload from '../shared/Reload/Reload';
 import { AppDispatch } from '../../store/setup';
 import './Feed.scss';
@@ -54,7 +55,7 @@ export default function Feed() {
 
   return (
     <div className='Feed'>
-      {!isNewsfeed && <CreatePost />}
+      <CreatePost />
 
       <div className="Feed__list">
         {
@@ -72,7 +73,13 @@ export default function Feed() {
           ||
           (
             posts.data.length === 0
-              ? <p className={`${isNewsfeed ? 'newsfeed' : ''} no-users`}>no posts available</p>
+              ? (
+                <div className='Feed__empty'>
+                  <h2>{isNewsfeed ? 'Your feed is quiet' : 'No posts yet'}</h2>
+                  <p>{isNewsfeed ? 'Share something above, or find people to connect with.' : 'Share your first post above.'}</p>
+                  {isNewsfeed && <Link to={'/' + ROUTES.FRIENDS}>Find people</Link>}
+                </div>
+              )
               : posts.data.map((post) => (
                 <Post key={post.postId} postData={post} />
               ))

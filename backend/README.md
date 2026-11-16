@@ -129,7 +129,7 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 | POST | `/api/post` | Multipart: `content` and/or `file` (image, max 5 MB) |
 | DELETE | `/api/delete-post/:postId` | Own posts only; also deletes the image |
 | GET | `/api/user-posts?limit=&offset=` | Your posts, with comments and replies |
-| GET | `/api/posts?limit=&offset=` | Newsfeed: everyone else's posts |
+| GET | `/api/posts?limit=&offset=` | Newsfeed: everyone's posts, newest first |
 | GET | `/api/photos?limit=&offset=` | Your posts that have an image |
 | POST | `/api/like` / `/api/unlike` | `{ postId }`. One like per user per post (enforced by the database) |
 | POST | `/api/comment` | `{ postId, content, parentId? }`. Set `parentId` to reply to a comment |

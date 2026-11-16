@@ -2,44 +2,99 @@
 
 .CommentInput {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 10px;
 
-  img {
-    width: 35px;
-    height: 35px;
+  > img {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
     object-position: top;
   }
 
+  &__box {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__replying {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 0 6px 12px;
+    font-size: 12px;
+    color: $grey1;
+
+    strong {
+      color: $dark-grey;
+    }
+
+    button {
+      margin-left: 4px;
+      padding: 0 4px;
+      border: none;
+      background: none;
+      font-size: 16px;
+      line-height: 1;
+      color: $grey1;
+      cursor: pointer;
+
+      &:hover {
+        color: $black;
+      }
+    }
+  }
+
   &__input {
     position: relative;
-    flex-grow: 1;
 
     input {
       width: 100%;
-      padding: 10px 35px 10px 10px;
-      font-size: 13px;
+      padding: 9px 42px 9px 14px;
+      border: 1px solid transparent;
+      border-radius: 999px;
       background-color: $grey-bg;
+      font-family: inherit;
+      font-size: 14px;
+      color: $black;
       outline: none;
-      border: none;
-      border-radius: 3px;
+      transition: border-color 150ms, background-color 150ms;
+
+      &::placeholder {
+        color: $grey1;
+      }
+
+      &:focus {
+        border-color: $primary;
+        background-color: $white;
+      }
     }
 
     button {
       position: absolute;
-      right: 10px;
-      top: 8px;
+      top: 50%;
+      right: 6px;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
       color: $primary;
-      background-color: transparent;
-      font-size: 18px;
-      font-family: "Bootstrap-icons";
-      border: 0;
-      outline: 0;
       cursor: pointer;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(109, 63, 214, 0.1);
+      }
+
+      &:disabled {
+        color: #b9b3c9;
+        cursor: default;
+      }
     }
   }
-
 }

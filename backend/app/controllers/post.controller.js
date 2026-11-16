@@ -119,8 +119,8 @@ exports.getAllPostsByUser = async (req, res) => {
 
 exports.getNewsfeed = async (req, res) => {
   try {
-    const where = { userId: { [db.Sequelize.Op.ne]: req.userId } };
-    const page = await listPosts({ where, viewerId: req.userId, limit: req.query.limit, offset: req.query.offset });
+    // everyone's posts, yours included
+    const page = await listPosts({ where: {}, viewerId: req.userId, limit: req.query.limit, offset: req.query.offset });
     res.status(200).json(page);
   } catch (error) {
     console.error("Error fetching newsfeed:", error);

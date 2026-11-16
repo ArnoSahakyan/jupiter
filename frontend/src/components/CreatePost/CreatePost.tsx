@@ -1,7 +1,7 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPfp } from '../../store/features/userInfo/userInfoSlice';
+import { getName, getPfp } from '../../store/features/userInfo/userInfoSlice';
 import { createPost } from '../../store/features/post/postThunks';
 import { mixed, object, string } from 'yup';
 import { AppDispatch } from '../../store/setup';
@@ -30,6 +30,7 @@ export default function CreatePost() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const pfp = useSelector(getPfp)
+  const firstName = useSelector(getName)?.split(' ')[0]
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -67,7 +68,7 @@ export default function CreatePost() {
           {({ setFieldValue, isSubmitting }) => (
             <Form>
               <div className="attachement">
-                <Field className="text-field" as="textarea" name="content" placeholder="Write your post..." />
+                <Field className="text-field" as="textarea" name="content" placeholder={firstName ? `What's on your mind, ${firstName}?` : "What's on your mind?"} aria-label='Write a post' />
                 <div className="file-input">
                   <label htmlFor="file" title="Add an image" aria-label="Add an image">
                     <span>&#xF42A;</span>

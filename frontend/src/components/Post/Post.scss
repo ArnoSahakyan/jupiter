@@ -3,118 +3,152 @@
 .Post {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 25px;
-  border-radius: 5px;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 14px;
   background-color: $white;
+  box-shadow: 0 1px 2px rgba(23, 12, 48, 0.06);
 
-  &__user {
+  &__header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
+  }
 
-    .delete {
-      position: relative;
+  &__avatar img {
+    display: block;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+  }
 
-      span {
-        cursor: pointer;
-        font-family: "Bootstrap-icons";
-      }
+  &__author {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 
-      button {
-        position: absolute;
-        right: 0;
-        top: 20px;
-        display: none;
-        width: 100px;
-        padding: 5px 0;
-        outline: none;
-        border: none;
-        border-radius: 3px;
-        background-color: $primary;
-        color: $white;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 200ms;
+    time {
+      font-size: 13px;
+      color: $grey1;
+    }
+  }
 
-        &:disabled {
-          background-color: $primary-disabled;
-          cursor: not-allowed;
-        }
+  &__name {
+    font-size: 15px;
+    font-weight: 600;
+    color: $black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
-        &.active {
-          display: block;
-        }
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
-        &:hover {
-          border: none;
-          background-color: $primary-disabled;
-        }
-      }
+  &__menu {
+    position: relative;
+  }
+
+  &__menu-button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: $grey1;
+    cursor: pointer;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      background-color: $grey-bg;
+      color: $black;
     }
 
-    &>div {
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
     }
+  }
 
-    .pfp {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      object-position: center;
-    }
+  &__menu-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 5;
+    min-width: 160px;
+    padding: 6px;
+    border-radius: 10px;
+    background-color: $white;
+    box-shadow: 0 8px 24px rgba(23, 12, 48, 0.16), 0 0 0 1px rgba(23, 12, 48, 0.05);
 
-    .name {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
+    button {
+      width: 100%;
+      padding: 9px 10px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
 
-      h5 {
-        color: $primary;
-        font-size: 14.5px;
-        font-weight: 700;
+      &:hover:not(:disabled) {
+        background-color: $grey-bg;
       }
 
-      span {
-        font-size: 12px;
-        color: $grey1;
+      &.danger {
+        color: #c0392b;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: default;
       }
     }
   }
 
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-wrap: break-word;
+  &__text {
+    font-size: 15px;
+    line-height: 1.55;
+    color: $dark-grey;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
 
-    p {
-      font-size: 14px;
-      color: $grey1;
-    }
+  &__image {
+    margin: 0 -20px;
+    background-color: $grey-bg;
 
     img {
+      display: block;
       width: 100%;
+      max-height: 560px;
+      object-fit: contain;
     }
   }
 
   &__comments {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-height: 200px;
+    gap: 12px;
+    max-height: 340px;
     overflow-y: auto;
   }
 }
 
 @media screen and (max-width: 767px) {
   .Post {
-    padding: 10px;
     width: 100%;
+    padding: 14px 14px;
+
+    &__image {
+      margin: 0 -14px;
+    }
   }
 }

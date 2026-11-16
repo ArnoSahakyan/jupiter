@@ -96,6 +96,13 @@ const findEverywhere = (state: TpostInitialState, postId: number) =>
     .map(list => list.data.find(post => post.postId === postId))
     .filter((post): post is PostState => post !== undefined);
 
+// Add a page of posts, skipping any already shown (posting something new
+// shifts the server's pages by one).
+const appendNew = (list: PostState[], page: PostState[]) => {
+  const shown = new Set(list.map(post => post.postId));
+  list.push(...page.filter(post => !shown.has(post.postId)));
+};
+
 const addComment = (post: PostState, comment: TComments) => {
   if (comment.parentId) {
     const parentComment = post.comments!.find(c => c.commentId === comment.parentId);
@@ -123,7 +130,7 @@ const postSlice = createSlice({
         if (meta.arg.offset === 0) {
           state.userPosts = payload;
         } else {
-          state.userPosts.data.push(...payload.data);
+          appendNew(state.userPosts.data, payload.data);
           state.userPosts.currentPage = payload.currentPage;
           state.userPosts.offset = payload.offset;
           state.userPosts.totalItems = payload.totalItems;
@@ -144,7 +151,7 @@ const postSlice = createSlice({
         if (meta.arg.offset === 0) {
           state.newsfeedPosts = payload;
         } else {
-          state.newsfeedPosts.data.push(...payload.data);
+          appendNew(state.newsfeedPosts.data, payload.data);
           state.newsfeedPosts.currentPage = payload.currentPage;
           state.newsfeedPosts.offset = payload.offset;
           state.newsfeedPosts.totalItems = payload.totalItems;
@@ -156,7 +163,7 @@ const postSlice = createSlice({
         if (meta.arg.offset === 0 || state.profilePosts.userId !== meta.arg.userId) {
           state.profilePosts = { ...payload, userId: meta.arg.userId };
         } else {
-          state.profilePosts.data.push(...payload.data);
+          appendNew(state.profilePosts.data, payload.data);
           state.profilePosts.currentPage = payload.currentPage;
           state.profilePosts.offset = payload.offset;
           state.profilePosts.totalItems = payload.totalItems;
@@ -191,6 +198,11 @@ const postSlice = createSlice({
         };
         state.userPosts.data.unshift(modifiedData)
         if (state.userPosts.totalItems !== undefined) state.userPosts.totalItems += 1
+        // the newsfeed shows your posts too (only once it has loaded)
+        if (state.newsfeedPosts.totalItems !== undefined) {
+          state.newsfeedPosts.data.unshift(modifiedData)
+          state.newsfeedPosts.totalItems += 1
+        }
         state.createLoading = false
       })
       .addCase(createPost.pending, (state) => {
