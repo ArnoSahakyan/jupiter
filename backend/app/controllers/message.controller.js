@@ -1,7 +1,8 @@
 const db = require("../models");
 
 exports.saveMessage = async (req, res) => {
-  const { senderId, receiverId, message, roomId } = req.body;
+  const senderId = req.userId;
+  const { receiverId, message, roomId } = req.body;
 
   try {
     const newMessage = await db.message.create({

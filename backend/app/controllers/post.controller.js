@@ -65,12 +65,17 @@ exports.createPost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   const { postId } = req.params;
+  const userId = req.userId;
 
   try {
     const post = await db.post.findOne({ where: { postId: postId } });
 
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (post.userId !== userId) {
+      return res.status(403).json({ error: 'You can only delete your own posts' });
     }
 
     await db.comment.destroy({ where: { postId: postId } });

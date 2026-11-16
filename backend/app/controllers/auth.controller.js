@@ -39,24 +39,11 @@ exports.signup = (req, res) => {
     password: bcrypt.hashSync(req.body.password, 8)
   })
     .then(user => {
-      if (req.body.roles) {
-        Role.findAll({
-          where: {
-            name: {
-              [Op.or]: req.body.roles
-            }
-          }
-        }).then(roles => {
-          user.setRoles(roles).then(() => {
-            res.send({ message: "User registered successfully!" });
-          });
-        });
-      } else {
-        // user role = 1
-        user.setRoles([1]).then(() => {
-          res.send({ message: "User registered successfully!" });
-        });
-      }
+      // Every new account gets the plain "user" role (id 1). Roles sent by the
+      // client are ignored so nobody can sign themselves up as admin/moderator.
+      return user.setRoles([1]).then(() => {
+        res.send({ message: "User registered successfully!" });
+      });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
@@ -66,7 +53,7 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     where: {
-      username: req.body.username
+      username: (req.body.username || '').toLowerCase()
     }
   })
     .then(user => {
@@ -209,4 +196,4 @@ exports.getUserById = async (req, res) => {
       error: error.message
     });
   }
-};
+};

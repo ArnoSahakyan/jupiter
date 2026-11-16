@@ -2,6 +2,8 @@ const { user } = require("../models");
 const supabase = require('../../supabaseClient');
 const db = require("../models");
 
+const ALLOWED_IMAGE_TYPES = ['pfp', 'coverPhoto'];
+
 exports.updatePath = async (userId, path, fieldKey) => {
   try {
     const userRecord = await user.findByPk(userId);
@@ -25,23 +27,30 @@ exports.controllerUserImages = async (req, res) => {
       return res.status(400).json({ error: 'Incomplete request' });
     }
 
+    if (!ALLOWED_IMAGE_TYPES.includes(type)) {
+      return res.status(400).json({ error: 'Invalid image type' });
+    }
+
     const user = await db.user.findOne({ where: { id: userId }, attributes: [type] });
     const existingImagePath = user ? user[type] : null;
 
     if (existingImagePath) {
       const existingFilePath = existingImagePath.replace(`${process.env.SUPABASE_IMAGE_URL}winku/`, '');
 
-      if (existingFilePath == 'default/pfp.jpg' || existingFilePath == 'default/cover.jpg') return;
+      const isDefaultImage = existingFilePath === 'default/pfp.jpg' || existingFilePath === 'default/cover.jpg';
 
-      const { data: deleteData, error: deleteError } = await supabase
-        .storage
-        .from('winku')
-        .remove([existingFilePath]);
+      // Never delete the shared default images, but still continue with the upload.
+      if (!isDefaultImage) {
+        const { data: deleteData, error: deleteError } = await supabase
+          .storage
+          .from('winku')
+          .remove([existingFilePath]);
 
-      if (deleteError) {
-        console.error('Error deleting existing profile picture:', deleteError.message);
-      } else if (!deleteData || deleteData.length === 0) {
-        console.error('Failed to delete file. File not found:', existingFilePath);
+        if (deleteError) {
+          console.error('Error deleting existing profile picture:', deleteError.message);
+        } else if (!deleteData || deleteData.length === 0) {
+          console.error('Failed to delete file. File not found:', existingFilePath);
+        }
       }
     }
 

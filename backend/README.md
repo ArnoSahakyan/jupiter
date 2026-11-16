@@ -1,6 +1,4 @@
-Here is a README file for your backend with all the provided routes:
-
-# Project Name
+# Jupiter Backend
 
 ## Overview
 

@@ -38,7 +38,7 @@ db.sequelize.sync().then(() => {
 app.options('*', cors(corsOptions)); // handle preflight requests
 
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Winku application." });
+  res.json({ message: "Welcome to the Jupiter API." });
 });
 
 require('./app/routes/auth.routes')(app);
@@ -73,8 +73,6 @@ io.on('connection', (socket) => {
   socket.on("join_room", (data) => {
     socket.join(data);
   });
-
-  console.log("AAA");
 
   // Send message
   socket.on("send_message", async (data) => {
