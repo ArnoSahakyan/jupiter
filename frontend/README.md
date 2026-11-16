@@ -1,250 +1,94 @@
 # Jupiter Frontend
 
-Jupiter is a social network website allowing users to sign up, sign in, upload images, change profile and cover pictures, upload posts with text and photo, add and delete friends, search for other users, and message them in real-time.
+**Jupiter** is a small social network for students: share posts and photos, find friends and chat in real time.
+
+This is the web app. The API lives in a separate repository: [winkuback](https://github.com/ArnoSahakyan/winkuback).
 
 ## Features
 
-- User Authentication (Sign Up, Sign In, Refresh Token)
-- Upload Images (Profile Picture, Cover Picture, Post Images)
-- Change Profile and Cover Pictures
-- Create, Read, Update, Delete Posts
-- Like and Unlike Posts
-- Comment on Posts
-- Add and Delete Friends
-- Search for Users
-- Real-time Messaging
-- Responsive Design
+- Sign up and log in (sessions refresh automatically)
+- Profile with name, job, profile picture and cover photo
+- Posts with text and/or an image, likes, comments and replies
+- Newsfeed with everyone's posts, and a Photos page with your images
+- Friend requests, friend suggestions and user search
+- Real-time one-to-one chat with friends
+- Online / away / offline status
+- Responsive layout: three columns on desktop, two on tablets (768-1023px), one on phones (up to 767px)
 
-## Prerequisites
+## Tech stack
 
-- Node.js
-- npm or yarn
+- **React 18 + TypeScript**, built with **Vite**
+- **Redux Toolkit** for state, **redux-persist** to keep you logged in
+- **React Router** for pages
+- **Formik + Yup** for forms and validation
+- **Axios** for the API, **Socket.IO** for chat
+- **SCSS** for styles; brand colors live in `src/assets/_webColors.scss`
 
-## Installation
+## Getting started
 
-1. Clone the repository
+### Prerequisites
 
-   ```bash
-   git clone https://github.com/ArnoSahakyan/winku.git
-   cd winku
-   ```
+- Node.js 18+
+- The [Jupiter backend](https://github.com/ArnoSahakyan/winkuback) running locally or deployed
 
-2. Install dependencies
+### 1. Install dependencies
 
-   ```bash
-   npm install
-   ```
-
-   or
-
-   ```bash
-   yarn install
-   ```
-
-## Environment Variables
-
-Create a `.env` file in the root directory and add the following environment variables:
-
-```env
-   VITE_BACK_BASE_URL=<your-backend-url>
+```sh
+npm install
 ```
 
-## Running the App
+### 2. Point the app at the backend
 
-To start the development server, run:
+Set the backend URL in `.env` in the project root:
 
-```bash
+```env
+VITE_BACK_BASE_URL=http://localhost:8080
+```
+
+The backend's `CORS` setting must allow the frontend's URL (`http://localhost:5173` for local development).
+
+### 3. Run it
+
+```sh
 npm run dev
 ```
 
-or
-
-```bash
-yarn dev
-```
-
-The app will be available at (http://localhost:5173).
-
-## Building the App
-
-To create a production build, run:
-
-```bash
-npm run build
-```
-
-or
-
-```bash
-yarn build
-```
-
-The production build will be available in the `dist` directory.
-
-## Project Structure
-
-```plaintext
-.vscode/
-node_modules/
-public/
-src/
-|-- api/
-|-- assets/
-|-- components/
-|   |-- AuthRoute/
-|   |-- BurgerMenu/
-|   |-- CreatePost/
-|   |-- EditForm/
-|   |-- Feed/
-|   |-- Footer/
-|   |-- FriendsBar/
-|   |-- LeftSidebar/
-|   |-- Messages/
-|   |-- Navigation/
-|   |-- PageBar/
-|   |-- Post/
-|   |-- ProfileCover/
-|   |-- ProtectedRoute/
-|   |-- RightSidebar/
-|   |-- SearchUser/
-|   |-- shared/
-|       |-- Shortcuts/
-|-- hooks/
-|   |-- dateFormat.ts
-|   |-- useAuth.ts
-|-- layout/
-|   |-- layout.tsx
-|-- pages/
-|   |-- NotProtected/
-|   |   |-- ErrorPage/
-|   |   |-- LogIn/
-|   |   |-- SignUp/
-|   |-- Protected/
-|       |-- FriendsPage/
-|       |-- HomePage/
-|       |-- NewsFeed/
-|       |-- Photos/
-|-- routes/
-|-- store/
-|   |-- features/
-|       |-- friends/
-|           |-- friendsSlice.ts
-|           |-- friendThunks.ts
-|       |-- post/
-|           |-- postSlice.ts
-|           |-- postThunks.ts
-|       |-- userInfo/
-|           |-- userInfoSlice.ts
-|           |-- userThunks.ts
-|       |-- rootReducer.ts
-|   |-- setup.ts
-|-- App.scss
-|-- App.tsx
-|-- index.scss
-|-- main.tsx
-|-- vite-env.d.ts
-.env
-.eslintrc.cjs
-.gitignore
-index.html
-package-lock.json
-package.json
-README.md
-tsconfig.json
-tsconfig.node.json
-vercel.json
-vite.config.ts
-```
-
-## Components
-
-- **AuthRoute**: Handles routes that should only be accessible to authenticated users.
-- **BurgerMenu**: Implements the responsive burger menu.
-- **CreatePost**: Form component for creating new posts.
-- **EditForm**: Form component for editing user details.
-- **Feed**: Displays the news feed.
-- **Footer**: Footer component of the application.
-- **FriendsBar**: Displays a list of friends.
-- **LeftSidebar**: Sidebar component with navigation links.
-- **Messages**: Component for displaying messages.
-- **Navigation**: Main navigation bar.
-- **PageBar**: Pagination component.
-- **Post**: Component to display individual posts.
-- **ProfileCover**: Component to display and update the user's cover photo.
-- **ProtectedRoute**: Handles routes that should only be accessible to authenticated users.
-- **RightSidebar**: Sidebar component with additional navigation links.
-- **SearchUser**: Component for searching users.
-- **shared**: Contains shared components like icons, loaders, and modals.
-- **Shortcuts**: Quick access to various sections of the application.
-
-## Hooks
-
-- **dateFormat.ts**: Custom hook for formatting dates.
-- **useAuth.ts**: Custom hook for handling authentication.
-
-## Pages
-
-- **NotProtected**
-  - **ErrorPage**: Page displayed for error routes.
-  - **LogIn**: Login page.
-  - **SignUp**: Sign-up page.
-- **Protected**
-  - **FriendsPage**: Page displaying the user's friends.
-  - **HomePage**: Homepage displaying user's profile and posts.
-  - **NewsFeed**: Page displaying the news feed.
-  - **Photos**: Page displaying the user's photos.
-
-## Store
-
-- **features**
-  - **friends**
-    - **friendsSlice.ts**: Slice for managing friends.
-    - **friendThunks.ts**: Thunks for friends-related actions.
-  - **post**
-    - **postSlice.ts**: Slice for managing posts.
-    - **postThunks.ts**: Thunks for posts-related actions.
-  - **userInfo**
-    - **userInfoSlice.ts**: Slice for managing user information.
-    - **userThunks.ts**: Thunks for user information-related actions.
-  - **rootReducer.ts**: Combines all slices.
-- **setup.ts**: Sets up the Redux store.
-
-## Routing
-
-The app uses `react-router-dom` for routing. The routes are defined in `src/routes`.
-
-### Protected Routes
-
-Protected routes are wrapped in the `ProtectedRoute` component to ensure that only authenticated users can access them.
-
-### Auth Routes
-
-Auth routes are wrapped in the `AuthRoute` component to ensure that only unauthenticated users can access them.
-
-## State Management
-
-The app uses Redux for state management. The store setup is in `src/store/setup.ts`. User information is managed in the `userInfoSlice` and `userThunks` in `src/store/features/userInfo`.
-
-## Image Upload
-
-Image uploads are handled using the `uploadMiddleware` and `compressImageMiddleware` in the backend. Images are stored in Supabase storage.
-
-## Dependencies
-
-- React
-- Redux
-- React Router
-- Axios
-- Socket IO
-- Vite
+Open http://localhost:5173 and sign up for an account.
 
 ## Scripts
 
-- `dev`: Starts the development server using Vite.
-- `build`: Builds the project for production.
-- `lint`: Runs ESLint to check for code quality issues.
-- `preview`: Previews the production build.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the development server with hot reload |
+| `npm run build` | Type-check and build for production into `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run ESLint (fails on any warning) |
 
-## Contributing
+## Project structure
 
-If you would like to contribute, please fork the repository and use a feature branch. Pull requests are welcome.
+```text
+public/                   Logos, favicon and static images
+src/
+  api/axios.ts            API client: adds the access token, refreshes it when it expires
+  assets/                 Fonts and the color palette (_webColors.scss)
+  components/             UI pieces: navigation, feed, posts, comments, chat, sidebars, footer, ...
+    shared/               Loaders, skeletons, modal, small reusable bits
+  hooks/                  useAuth (login, signup, logout) and date formatting
+  layout/layout.tsx       Page frame: navbar, notifications, footer
+  pages/
+    NotProtected/         Log in, sign up, error page
+    Protected/            Profile (HomePage), News Feed, Friends, Photos
+  routes/routes.ts        Route paths
+  store/                  Redux store and slices (user, posts, friends)
+```
+
+Pages under `Protected/` need a logged-in user (`ProtectedRoute`); the login and signup pages redirect logged-in users away (`AuthRoute`).
+
+## Changing the look
+
+- **Colors:** edit `src/assets/_webColors.scss`; every component uses these variables.
+- **Logos:** `public/logo.svg` (dark), `public/logo-light.svg` (for colored backgrounds), `public/favicon.svg`, and `public/jupiter.svg` on the login and signup pages.
+
+## Deployment
+
+The app is a static site. `npm run build` outputs `dist/`. `vercel.json` sends every route to `index.html`, so deep links like `/messages` work on Vercel. Set `VITE_BACK_BASE_URL` to the deployed backend URL in the hosting provider's environment settings.
