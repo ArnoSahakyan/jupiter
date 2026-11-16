@@ -2,7 +2,7 @@
 
 REST and real-time API for **Jupiter**, a small social network for students. Users can sign up, post text and photos, like and comment, add friends and chat in real time.
 
-The frontend lives in a separate repository: [winku](https://github.com/ArnoSahakyan/winku).
+The frontend lives in a separate repository: [jupiter-front](https://github.com/ArnoSahakyan/winku).
 
 ## Tech stack
 
