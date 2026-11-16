@@ -66,35 +66,7 @@ io.use((socket, next) => {
   });
 });
 
-io.on('connection', (socket) => {
-  const userId = socket.userId;
-
-  // Join room
-  socket.on("join_room", (data) => {
-    socket.join(data);
-  });
-
-  // Send message
-  socket.on("send_message", async (data) => {
-    // Save message to the database without room ID
-    try {
-      await db.message.create({
-        senderId: userId,
-        receiverId: data.receiverId,
-        message: data.message
-      });
-    } catch (error) {
-      console.error('Error saving message:', error);
-    }
-
-    // Emit message to room
-    socket.to(data.room).emit("receive_message", data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`User ${userId} disconnected`);
-  });
-});
+require('./app/socket/chat')(io, db);
 
 // Start the server
 const PORT = process.env.PORT || 7070;
