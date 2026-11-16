@@ -29,7 +29,33 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 
-db.sequelize.sync().then(() => {
+// Roles must exist before anyone can sign up (new users get role id 1).
+const seedRoles = () => Promise.all(
+  [[1, 'user'], [2, 'moderator'], [3, 'admin']].map(([id, name]) =>
+    db.role.findOrCreate({ where: { id }, defaults: { name } })
+  )
+);
+
+// Users created before the Supabase project moved still point at the old
+// project's default images. Repoint any default image that isn't on the
+// current project.
+const fixDefaultImages = async () => {
+  const { Op } = db.Sequelize;
+  const { DEFAULT_PFP, DEFAULT_COVER } = require('./app/models/user.model.js');
+  const [[pfpCount], [coverCount]] = await Promise.all([
+    db.user.update({ pfp: DEFAULT_PFP }, {
+      where: { pfp: { [Op.like]: '%/winku/default/pfp.jpg', [Op.ne]: DEFAULT_PFP } }
+    }),
+    db.user.update({ coverPhoto: DEFAULT_COVER }, {
+      where: { coverPhoto: { [Op.like]: '%/winku/default/cover.jpg', [Op.ne]: DEFAULT_COVER } }
+    })
+  ]);
+  if (pfpCount || coverCount) {
+    console.log(`Updated default images: ${pfpCount} profile, ${coverCount} cover`);
+  }
+};
+
+db.sequelize.sync().then(seedRoles).then(fixDefaultImages).then(() => {
   console.log('Database synchronized');
 }).catch((err) => {
   console.error('Error synchronizing the database:', err);

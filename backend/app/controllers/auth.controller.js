@@ -30,24 +30,27 @@ const generateRefreshToken = (user) => {
   return refreshToken
 }
 
-exports.signup = (req, res) => {
-  // Save User to Database
-  User.create({
-    fname: req.body.fname,
-    username: req.body.username.toLowerCase(),
-    email: req.body.email.toLowerCase(),
-    password: bcrypt.hashSync(req.body.password, 8)
-  })
-    .then(user => {
+exports.signup = async (req, res) => {
+  try {
+    // Create the user and its role together, so a failure never leaves a
+    // half-registered account that blocks the username/email.
+    await db.sequelize.transaction(async (transaction) => {
+      const user = await User.create({
+        fname: req.body.fname,
+        username: req.body.username.toLowerCase(),
+        email: req.body.email.toLowerCase(),
+        password: bcrypt.hashSync(req.body.password, 8)
+      }, { transaction });
+
       // Every new account gets the plain "user" role (id 1). Roles sent by the
       // client are ignored so nobody can sign themselves up as admin/moderator.
-      return user.setRoles([1]).then(() => {
-        res.send({ message: "User registered successfully!" });
-      });
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
+      await user.setRoles([1], { transaction });
     });
+
+    res.send({ message: "User registered successfully!" });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 exports.signin = (req, res) => {

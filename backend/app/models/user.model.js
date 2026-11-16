@@ -1,3 +1,7 @@
+// Default images live in the configured Supabase project's "winku" bucket.
+const DEFAULT_PFP = `${process.env.SUPABASE_IMAGE_URL}winku/default/pfp.jpg`;
+const DEFAULT_COVER = `${process.env.SUPABASE_IMAGE_URL}winku/default/cover.jpg`;
+
 module.exports = (sequelize, Sequelize) => {
   const User = sequelize.define("users", {
     fname: {
@@ -18,12 +22,12 @@ module.exports = (sequelize, Sequelize) => {
     },
     pfp: {
       type: Sequelize.STRING,
-      defaultValue: 'https://hbjvefabqngowqvdurbj.supabase.co/storage/v1/object/public/winku/default/pfp.jpg'
+      defaultValue: DEFAULT_PFP
 
     },
     coverPhoto: {
       type: Sequelize.STRING,
-      defaultValue: 'https://hbjvefabqngowqvdurbj.supabase.co/storage/v1/object/public/winku/default/cover.jpg'
+      defaultValue: DEFAULT_COVER
     },
     onlineStatus: {
       type: Sequelize.STRING,
@@ -38,3 +42,6 @@ module.exports = (sequelize, Sequelize) => {
 
   return User;
 };
+
+module.exports.DEFAULT_PFP = DEFAULT_PFP;
+module.exports.DEFAULT_COVER = DEFAULT_COVER;
