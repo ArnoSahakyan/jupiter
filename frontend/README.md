@@ -2,7 +2,7 @@
 
 **Jupiter** is a small social network for students: share posts and photos, find friends and chat in real time.
 
-This is the web app. The API lives in a separate repository: [winkuback](https://github.com/ArnoSahakyan/winkuback).
+This is the web app. The API lives in a separate repository: [jupiter-back](https://github.com/ArnoSahakyan/winkuback).
 
 ## Features
 
