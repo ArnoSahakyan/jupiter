@@ -29,10 +29,11 @@ const authIpLimiter = rateLimit({
   limit: 100
 });
 
+// Generous enough for a class signing up together from one campus IP.
 const signupLimiter = rateLimit({
   ...common,
   windowMs: ONE_HOUR,
-  limit: 20
+  limit: 50
 });
 
 module.exports = { loginLimiter, authIpLimiter, signupLimiter };
