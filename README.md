@@ -7,7 +7,7 @@ Built with **React + TypeScript** on the front end and **Node.js + Express + Pos
 ## Features
 
 - Sign up and log in; sessions renew silently
-- Profile with name, job, profile picture and cover photo
+- Profiles with name, job, profile picture and cover photo; open anyone's profile to see their posts, photos and friends, and add them as a friend or message them
 - Posts with text and/or a photo, likes, comments and replies
 - Newsfeed, and a Photos page with your images
 - Friend requests, friend suggestions and user search

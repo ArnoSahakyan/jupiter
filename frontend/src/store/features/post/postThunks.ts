@@ -36,6 +36,23 @@ const updatePfpPaths = (comments: (TComments | TReplies)[] | null): (TComments |
   });
 };
 
+// Posts of another user's profile (/user/:id).
+export const getProfilePosts = createAsyncThunk('post/getProfilePosts', async ({ userId, limit, offset }: { userId: number, limit: number, offset: number }) => {
+  const response = await api.get(`${url}/api/users/${userId}/posts`, { params: { limit, offset } });
+  return {
+    totalItems: response.data.totalItems,
+    totalPages: response.data.totalPages,
+    currentPage: response.data.currentPage,
+    data: response.data.data.map((post: PostState) => ({
+      ...post,
+      image: post.image ? post.image : null,
+      createdAt: new Date(post.createdAt),
+      comments: updatePfpPaths(post.comments)
+    })),
+    offset
+  };
+});
+
 export const getUserPosts = createAsyncThunk('post/getUserPosts', async ({ limit, offset }: { limit: number, offset: number }) => {
   const response = await api.get(`${url}/api/user-posts`, {
     params: { limit, offset }
@@ -76,8 +93,8 @@ export const getNewsfeed = createAsyncThunk('post/getNewsfeed', async ({ limit, 
   };
 });
 
-export const getUserPhotos = createAsyncThunk('post/getUserPhotos', async ({ limit, offset }: { limit: number, offset: number }) => {
-  const response = await api.get(`${url}/api/photos`,
+export const getUserPhotos = createAsyncThunk('post/getUserPhotos', async ({ limit, offset, userId }: { limit: number, offset: number, userId?: number }) => {
+  const response = await api.get(userId ? `${url}/api/users/${userId}/photos` : `${url}/api/photos`,
     { params: { limit, offset } }
   )
   response.data

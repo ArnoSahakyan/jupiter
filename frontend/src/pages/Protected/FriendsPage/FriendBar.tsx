@@ -3,6 +3,8 @@ import { TFriendBack, TRequest, Tunassocitaed, getRespondLoading } from '../../.
 import { deleteFriend, respondRequest, sendRequest } from '../../../store/features/friends/friendThunks';
 import { useState } from 'react';
 import { AppDispatch } from '../../../store/setup';
+import { Link } from 'react-router-dom';
+import { profilePath } from '../../../routes/routes';
 import './FriendBar.scss'
 
 interface FriendBarProps {
@@ -42,18 +44,18 @@ export default function FriendBar({ data, isFriend }: FriendBarProps) {
 
   return (
     <div className='FriendBar'>
-      <div className="FriendBar__content">
-        <img src={pfp} alt='profile picture' />
+      <Link to={profilePath(id)} className="FriendBar__content profile-link">
+        <img src={pfp} alt={fname} />
         <div className="name">
           <h5>{fname}</h5>
           {isFriend && <span>{job}</span>}
         </div>
-      </div>
+      </Link>
       <div className="FriendBar__btns">
         {isFriend === 'friend' && (
           <label htmlFor={`decline-${id}`}>
             <span className='span-decline'>&#xF659;</span>
-            <input type='button' id={`decline-${id}`} className='decline' disabled={isLoading(id)} value="Unfriend" onClick={() => handleUnfriend(1000)} />
+            <input type='button' id={`decline-${id}`} className='decline' disabled={isLoading(id)} value="Unfriend" onClick={() => handleUnfriend(id)} />
           </label>
         )}
         {isFriend === 'request' && (

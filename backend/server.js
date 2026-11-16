@@ -80,6 +80,7 @@ require('./app/routes/comment.routes')(app);
 require('./app/routes/friend.routes')(app);
 require('./app/routes/friendRequest.routes')(app);
 require('./app/routes/message.routes')(app);
+require('./app/routes/profile.routes')(app);
 
 // Socket.IO setup
 io.use((socket, next) => {

@@ -8,6 +8,8 @@ import Friend from '../FriendsBar/Friend/Friend';
 import { AppDispatch } from '../../store/setup';
 import SecondaryLoader from '../shared/SecondaryLoader/SecondaryLoader';
 import './SearchUser.scss';
+import { Link } from 'react-router-dom';
+import { profilePath } from '../../routes/routes';
 
 export default function SearchUser() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -105,7 +107,9 @@ export default function SearchUser() {
           {error && <p>Error: {error}</p>}
           {
             !loading && (results.length > 0 ? results.map((user) => (
-              <Friend key={user.id} user={user} onlyImg={false} />
+              <Link key={user.id} to={profilePath(user.id)} className='profile-link' onClick={() => setSearchOpen(false)}>
+                <Friend user={user} onlyImg={false} />
+              </Link>
             ))
               : <p className='no-users'>No Users Available</p>)
           }

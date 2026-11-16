@@ -59,6 +59,12 @@ a {
   text-decoration: none;
 }
 
+// Names and avatars that open someone's profile keep their normal look.
+a.profile-link {
+  color: inherit;
+  font-weight: inherit;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }

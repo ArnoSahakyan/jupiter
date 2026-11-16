@@ -8,6 +8,7 @@ This is the web app, part of the [Jupiter](../README.md) repository. The API is 
 
 - Sign up and log in; sessions renew silently through an httpOnly refresh cookie
 - Profile with name, job, profile picture and cover photo
+- Other people's profiles (`/user/:id`): their posts, photos and friends, plus Add Friend / Accept / Message
 - Posts with text and/or an image, likes, comments and replies
 - Newsfeed with everyone's posts, and a Photos page with your images
 - Friend requests, friend suggestions and user search
@@ -80,7 +81,7 @@ src/
   layout/layout.tsx       Page frame: navbar, notifications, footer
   pages/
     NotProtected/         Log in, sign up, error page
-    Protected/            Profile (HomePage), News Feed, Friends, Photos
+    Protected/            Your profile (HomePage), other people's profiles (UserProfile), News Feed, Friends, Photos
   routes/routes.ts        Route paths
   store/                  Redux store and slices (user, posts, friends)
 ```

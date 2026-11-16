@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFriendsBack, getMessagesLoading, receiveMessage } from '../../../store/features/friends/friendsSlice'
 import Friend from '../../FriendsBar/Friend/Friend'
 import { useEffect, useState, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import MessageChat from '../MessageChat/MessageChat'
 import MessageInput from '../MessageInput/MessageInput'
 import { getMessages } from '../../../store/features/friends/friendThunks'
@@ -46,16 +47,21 @@ export default function MessagesContent() {
     };
   }, [dispatch, token]);
 
-  const firstFriendId = friends[0]?.id;
+  // Opened from a profile's "Message" button: start on that friend's chat.
+  const requestedFriendId = (useLocation().state as { friendId?: number } | null)?.friendId;
+  const requestedIndex = friends.findIndex(friend => friend.id === requestedFriendId);
+  const startIndex = requestedIndex >= 0 ? requestedIndex : 0;
+  const startFriendId = friends[startIndex]?.id;
   const selectedFriendshipId = friends[selectedFriendIndex]?.friendshipId;
 
   // Load the first chat's history once friends are available.
   useEffect(() => {
-    if (initialLoad.current && firstFriendId !== undefined) {
-      dispatch(getMessages(firstFriendId));
+    if (initialLoad.current && startFriendId !== undefined) {
+      setSelectedFriendIndex(startIndex);
+      dispatch(getMessages(startFriendId));
       initialLoad.current = false;
     }
-  }, [dispatch, firstFriendId]);
+  }, [dispatch, startFriendId, startIndex]);
 
   // (Re)join the selected chat's room whenever the chat or the socket changes.
   useEffect(() => {

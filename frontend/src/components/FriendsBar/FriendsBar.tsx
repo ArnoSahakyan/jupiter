@@ -7,6 +7,8 @@ import Title from '../shared/Title/Title';
 import { getFriendsApi } from '../../store/features/friends/friendThunks';
 import { AppDispatch } from '../../store/setup';
 import FriendSkeleton from '../shared/Skeletons/FriendSkeleton';
+import { Link } from 'react-router-dom';
+import { profilePath } from '../../routes/routes';
 
 export default function FriendsBar() {
   const dispatch = useDispatch<AppDispatch>()
@@ -47,7 +49,7 @@ export default function FriendsBar() {
           ||
           (filteredFriends.length > 0
             ? filteredFriends.map(user => {
-              return <Friend key={user.id} user={user} onlyImg={false} />
+              return <Link key={user.id} to={profilePath(user.id)} className='profile-link'><Friend user={user} onlyImg={false} /></Link>
             })
             : <h4 className='no-users'>No friends available</h4>)
         }

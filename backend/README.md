@@ -108,11 +108,19 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 | Method | Route | Body / notes |
 | --- | --- | --- |
 | GET | `/api/user/info` | The logged-in user's profile |
-| GET | `/api/user/:id` | Another user's public profile |
 | PATCH | `/api/user/update` | `{ fname, job }`. An empty `job` clears it |
 | PATCH | `/api/user/status` | `{ onlineStatus }` (`online`, `away`, `offline`) |
 | GET | `/api/search-user?query=&limit=&offset=` | Search by name or username |
 | POST | `/api/upload/user-images` | Multipart: `file` (image, max 5 MB) and `type` (`pfp` or `coverPhoto`) |
+
+### Profiles
+
+| Method | Route | Body / notes |
+| --- | --- | --- |
+| GET | `/api/users/:id` | Someone's profile, with `relationship` to you (`self`, `friends`, `request_sent`, `request_received`, `none`), `friendshipId`, `friendsCount` and `postsCount`. Email is only included on your own profile |
+| GET | `/api/users/:id/posts?limit=&offset=` | Their posts, with comments and whether you liked each one |
+| GET | `/api/users/:id/photos?limit=&offset=` | Their posts that have an image |
+| GET | `/api/users/:id/friends` | Their friends (no emails) |
 
 ### Posts, likes and comments
 
@@ -170,6 +178,7 @@ app/
   migrations/             Versioned schema changes
   models/                 Sequelize models and relations
   routes/                 Route definitions
+  services/posts.js       Shared post/photo listing (newsfeed, timelines, profiles)
   socket/chat.js          Real-time chat handlers
   socket/presence.js      Online status from open connections
   utils/refreshCookie.js  Refresh-token cookie settings

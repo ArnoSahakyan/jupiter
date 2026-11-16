@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createComment, createPost, deletePost, getNewsfeed, getUserPosts, likePost, unlikePost } from "./postThunks";
+import { createComment, createPost, deletePost, getNewsfeed, getProfilePosts, getUserPosts, likePost, unlikePost } from "./postThunks";
 
 export type TReplies = {
   commentId: number;
+  userId?: number;
   content: string;
   createdAt: Date;
   fname: string;
@@ -42,6 +43,15 @@ type TpostInitialState = {
     totalItems: number | undefined
     offset: number
   },
+  // posts of the profile currently being viewed (/user/:id)
+  profilePosts: {
+    userId: number | undefined,
+    data: PostState[],
+    currentPage: number,
+    totalPages: number | undefined,
+    totalItems: number | undefined
+    offset: number
+  },
   loading: boolean,
   createLoading: boolean,
   deleteLoading: { loading: boolean, postId: number | undefined },
@@ -64,12 +74,27 @@ const initialState: TpostInitialState = {
     totalItems: undefined,
     offset: 0
   },
+  profilePosts: {
+    userId: undefined,
+    data: [],
+    currentPage: 1,
+    totalPages: undefined,
+    totalItems: undefined,
+    offset: 0
+  },
   loading: false,
   createLoading: false,
   deleteLoading: { loading: false, postId: undefined },
   commentLoading: { loading: false, postId: undefined },
   error: undefined
 }
+
+// A post can be in several lists at once (your timeline, the newsfeed, a
+// profile), so likes/comments update every copy.
+const findEverywhere = (state: TpostInitialState, postId: number) =>
+  [state.userPosts, state.newsfeedPosts, state.profilePosts]
+    .map(list => list.data.find(post => post.postId === postId))
+    .filter((post): post is PostState => post !== undefined);
 
 const addComment = (post: PostState, comment: TComments) => {
   if (comment.parentId) {
@@ -127,6 +152,29 @@ const postSlice = createSlice({
         }
         state.loading = false;
       })
+      .addCase(getProfilePosts.fulfilled, (state, { payload, meta }) => {
+        if (meta.arg.offset === 0 || state.profilePosts.userId !== meta.arg.userId) {
+          state.profilePosts = { ...payload, userId: meta.arg.userId };
+        } else {
+          state.profilePosts.data.push(...payload.data);
+          state.profilePosts.currentPage = payload.currentPage;
+          state.profilePosts.offset = payload.offset;
+          state.profilePosts.totalItems = payload.totalItems;
+          state.profilePosts.totalPages = payload.totalPages;
+        }
+        state.loading = false;
+      })
+      .addCase(getProfilePosts.pending, (state, { meta }) => {
+        state.loading = true;
+        if (state.profilePosts.userId !== meta.arg.userId) {
+          state.profilePosts = { ...initialState.profilePosts, userId: meta.arg.userId };
+        }
+      })
+      .addCase(getProfilePosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
       .addCase(getNewsfeed.pending, (state) => {
         state.loading = true;
         state.error = undefined;
@@ -154,37 +202,29 @@ const postSlice = createSlice({
       })
 
       .addCase(likePost.fulfilled, (state, { payload }) => {
-        if (payload.posterId === payload.userId) {
-          const post = state.userPosts.data.find(post => post.postId === payload.postId);
+        findEverywhere(state, payload.postId).forEach(post => {
           post.likeCount = post.likeCount + 1;
-          post.likedByUser = true
-        } else {
-          const post = state.newsfeedPosts.data.find(post => post.postId === payload.postId);
-          post.likeCount = post.likeCount + 1;
-          post.likedByUser = true
-        }
+          post.likedByUser = true;
+        });
       })
       .addCase(likePost.rejected, (state, { error }) => {
         state.error = error.message
       })
 
       .addCase(unlikePost.fulfilled, (state, { payload }) => {
-        if (payload.posterId === payload.userId) {
-          const post = state.userPosts.data.find(post => post.postId === payload.postId);
+        findEverywhere(state, payload.postId).forEach(post => {
           post.likeCount = post.likeCount - 1;
-          post.likedByUser = false
-        } else {
-          const post = state.newsfeedPosts.data.find(post => post.postId === payload.postId);
-          post.likeCount = post.likeCount - 1;
-          post.likedByUser = false
-        }
+          post.likedByUser = false;
+        });
       })
       .addCase(unlikePost.rejected, (state, { error }) => {
         state.error = error.message
       })
 
       .addCase(deletePost.fulfilled, (state, action) => {
-        state.userPosts.data = state.userPosts.data.filter(post => post.postId != action.payload.postId)
+        for (const list of [state.userPosts, state.newsfeedPosts, state.profilePosts]) {
+          list.data = list.data.filter(post => post.postId != action.payload.postId)
+        }
         state.deleteLoading = { loading: false, postId: undefined };
       })
       .addCase(deletePost.pending, (state, action) => {
@@ -197,21 +237,9 @@ const postSlice = createSlice({
       })
 
       .addCase(createComment.fulfilled, (state, action) => {
-        if (action.payload.uploaderId === action.payload.userId) {
-          const post = state.userPosts.data.find(post => post.postId === action.payload.postId);
-          if (post) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { uploaderId, ...comment } = action.payload;
-            addComment(post, comment);
-          }
-        } else {
-          const post = state.newsfeedPosts.data.find(post => post.postId === action.payload.postId);
-          if (post) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { uploaderId, ...comment } = action.payload;
-            addComment(post, comment);
-          }
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { uploaderId, ...comment } = action.payload;
+        findEverywhere(state, action.payload.postId).forEach(post => addComment(post, { ...comment, replies: null }));
         state.commentLoading = { loading: false, postId: undefined };
       })
       .addCase(createComment.pending, (state, action) => {
@@ -227,6 +255,7 @@ const postSlice = createSlice({
   selectors: {
     userPostsSelector: state => state.userPosts,
     newsfeedPostsSelector: state => state.newsfeedPosts,
+    profilePostsSelector: state => state.profilePosts,
     postGetLoading: state => state.loading,
     postCreateLoading: state => state.createLoading,
     postDeleteLoading: state => state.deleteLoading,
@@ -235,5 +264,5 @@ const postSlice = createSlice({
   }
 });
 
-export const { userPostsSelector, newsfeedPostsSelector, postGetLoading, postCreateLoading, postDeleteLoading, postCommentLoading, postError } = postSlice.selectors
+export const { userPostsSelector, newsfeedPostsSelector, profilePostsSelector, postGetLoading, postCreateLoading, postDeleteLoading, postCommentLoading, postError } = postSlice.selectors
 export default postSlice.reducer;

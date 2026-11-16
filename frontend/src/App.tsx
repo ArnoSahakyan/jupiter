@@ -21,6 +21,9 @@ const LazyLogIn = lazy(() => import('./pages/NotProtected/LogIn/LogIn.tsx'));
 const LazyFriendsPage = lazy(() => import('./pages/Protected/FriendsPage/FriendsPage.tsx'));
 const LazyFeed = lazy(() => import('./components/Feed/Feed.tsx'));
 const LazyMessages = lazy(() => import('./components/Messages/Messages.tsx'));
+const LazyUserProfile = lazy(() => import('./pages/Protected/UserProfile/UserProfile.tsx'));
+const LazyProfileFeed = lazy(() => import('./pages/Protected/UserProfile/ProfileFeed.tsx'));
+const LazyProfileFriends = lazy(() => import('./pages/Protected/UserProfile/ProfileFriends.tsx'));
 
 export const App = () => {
   const router = createBrowserRouter(
@@ -41,6 +44,12 @@ export const App = () => {
           </Route>
 
           <Route path={ROUTES.NEWSFEED} element={<Suspense fallback={<Loader />}> <LazyNewsFeed /> </Suspense>} />
+
+          <Route path={ROUTES.USER} element={<Suspense fallback={<Loader />}> <LazyUserProfile /> </Suspense>}>
+            <Route index element={<LazyProfileFeed />} />
+            <Route path={ROUTES.PHOTOS} element={<LazyPhotos />} />
+            <Route path={ROUTES.FRIENDS} element={<LazyProfileFriends />} />
+          </Route>
         </Route>
       </Route>
     )

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useOutletContext } from 'react-router-dom';
+import { TProfile } from '../../../api/profiles';
 import { useDispatch } from 'react-redux';
 import { getUserPhotos } from '../../../store/features/post/postThunks';
 import Reload from '../../../components/shared/Reload/Reload';
@@ -23,12 +25,14 @@ export default function Photos() {
   const [totalPages, setTotalPages] = useState(undefined)
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch<AppDispatch>();
+  // set when shown on someone else's profile (/user/:id/photos)
+  const userId = useOutletContext<{ profile?: TProfile } | undefined>()?.profile?.id;
   const limit = 3;
 
   const callNewPosts = (limit: number, offset: number) => {
     if (currentPage < totalPages || totalPages === null) {
       setLoading(true);
-      dispatch(getUserPhotos({ limit, offset }))
+      dispatch(getUserPhotos({ limit, offset, userId }))
         .then(res => {
           const payload = res.payload as Tpictures;
           setTotalPages(payload.totalPages)
@@ -44,7 +48,7 @@ export default function Photos() {
   // Load the first page once on mount (photos live in local state, so they start empty).
   useEffect(() => {
     setLoading(true);
-    dispatch(getUserPhotos({ limit, offset: 0 }))
+    dispatch(getUserPhotos({ limit, offset: 0, userId }))
       .then(res => {
         const payload = res.payload as Tpictures;
         setTotalPages(payload.totalPages)
@@ -54,7 +58,7 @@ export default function Photos() {
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false))
-  }, [dispatch, limit]);
+  }, [dispatch, limit, userId]);
 
   const handleReload = () => {
     callNewPosts(limit, offset + limit);

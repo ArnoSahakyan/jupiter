@@ -171,35 +171,3 @@ exports.userInfo = async (req, res) => {
     });
   }
 };
-
-exports.getUserById = async (req, res) => {
-  try {
-    const userId = req.params['id'];
-
-    const user = await User.findByPk(userId, {
-      attributes: ['id', 'fname', 'username', 'email', 'pfp', 'coverPhoto', 'onlineStatus', 'job']
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
-    }
-
-    res.status(200).json({
-      id: user.id,
-      fname: user.fname,
-      username: user.username,
-      email: user.email,
-      pfp: user.pfp,
-      coverPhoto: user.coverPhoto,
-      onlineStatus: user.onlineStatus,
-      job: user.job
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "An error occurred while retrieving user information",
-      error: error.message
-    });
-  }
-};

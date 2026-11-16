@@ -4,14 +4,21 @@ import './PageBar.scss'
 import { useSelector } from 'react-redux'
 import { getJob, getName, getPfp, } from '../../store/features/userInfo/userInfoSlice'
 
-export default function PageBar() {
+type PageBarProps = {
+  // someone else's profile; omit for your own
+  user?: { pfp: string; fname: string; job: string | null };
+  links?: { title: string; route: string }[];
+};
 
-  const pfp = useSelector(getPfp)
-  const job = useSelector(getJob)
+export default function PageBar({ user, links }: PageBarProps) {
+  const ownPfp = useSelector(getPfp)
+  const ownJob = useSelector(getJob)
+  const ownName = useSelector(getName)
+  const pfp = user ? user.pfp : ownPfp;
+  const job = user ? user.job : ownJob;
+  const fname = user ? user.fname : ownName;
 
-  const fname = useSelector(getName)
-
-  const pages = [
+  const pages = links ? links.map((link, id) => ({ id, ...link })) : [
     {
       id: 0,
       title: 'Timeline',
@@ -33,14 +40,8 @@ export default function PageBar() {
     <div className='PageBar'>
       <div className="PageBar__user">
         <div className="pfp">
-          <img src={pfp} alt='profile picture' />
-          <label htmlFor="upload-pfp" className='editpfp'>Edit Display Photo</label>
-          <input
-            id="upload-pfp"
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-          />
+          <img src={pfp} alt={fname ?? 'profile picture'} />
+          {!user && <label htmlFor="upload-pfp" className='editpfp'>Edit Display Photo</label>}
         </div>
         <div className="name">
           <h3>{fname}</h3>
@@ -50,7 +51,7 @@ export default function PageBar() {
       <div className="PageBar__menu">
         {
           pages.map(page => {
-            return <NavLink key={page.id} to={page.route}>{page.title}</NavLink>
+            return <NavLink key={page.id} to={page.route} end>{page.title}</NavLink>
           })
         }
       </div>

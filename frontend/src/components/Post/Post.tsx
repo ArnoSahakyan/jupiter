@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store/setup';
 import { getUserID } from '../../store/features/userInfo/userInfoSlice';
 import CommentSkeleton from '../shared/Skeletons/CommentSkeleton';
+import { Link } from 'react-router-dom';
+import { profilePath } from '../../routes/routes';
 import './Post.scss'
 
 export type TInsigths = {
@@ -45,9 +47,11 @@ export default function Post({ postData }: { postData: PostState }) {
     <div className='Post'>
       <div className="Post__user">
         <div>
-          <img className='pfp' src={postData.pfp} alt='profile picture' />
+          <Link to={profilePath(postData.userId, userId)} className='profile-link'>
+            <img className='pfp' src={postData.pfp} alt={postData.fname} />
+          </Link>
           <div className="name">
-            <h5>{postData.fname}</h5>
+            <Link to={profilePath(postData.userId, userId)} className='profile-link'><h5>{postData.fname}</h5></Link>
             <span>Published: {formatDate(postData.createdAt)}</span>
           </div>
         </div>

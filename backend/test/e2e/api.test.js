@@ -161,6 +161,39 @@ test('Jupiter API end to end', async (t) => {
     assert.ok(!suggestions.data.some(user => user.id === bob.id || user.id === alice.id));
   });
 
+  await t.test('profiles: relationship, privacy, posts and friends', async () => {
+    const bobProfile = await call('GET', `/api/users/${bob.id}`, { token: alice.accessToken });
+    assert.equal(bobProfile.status, 200);
+    assert.equal(bobProfile.data.relationship, 'friends');
+    assert.equal(bobProfile.data.friendshipId, friendshipId);
+    assert.equal(bobProfile.data.friendsCount, 1);
+    assert.ok(!('email' in bobProfile.data), "other people's email stays private");
+
+    const eveSeesBob = await call('GET', `/api/users/${bob.id}`, { token: eve.accessToken });
+    assert.equal(eveSeesBob.data.relationship, 'none');
+
+    const own = await call('GET', `/api/users/${alice.id}`, { token: alice.accessToken });
+    assert.equal(own.data.relationship, 'self');
+    assert.equal(own.data.email, alice.email, 'your own email is shown to you');
+
+    const form = new FormData();
+    form.append('content', `Bob's post ${run}`);
+    await fetch(API + '/api/post', { method: 'POST', headers: { Authorization: `Bearer ${bob.accessToken}` }, body: form });
+    const posts = await call('GET', `/api/users/${bob.id}/posts?limit=3&offset=0`, { token: eve.accessToken });
+    assert.equal(posts.data.totalItems, 1);
+    assert.equal(posts.data.data[0].content, `Bob's post ${run}`);
+    assert.equal(posts.data.data[0].likedByUser, false);
+
+    const friends = await call('GET', `/api/users/${bob.id}/friends`, { token: eve.accessToken });
+    assert.deepEqual(friends.data.map(f => f.id), [alice.id]);
+    assert.ok(!('email' in friends.data[0]));
+    assert.equal((await call('GET', `/api/users/${bob.id}/photos`, { token: eve.accessToken })).status, 200);
+
+    assert.equal((await call('GET', '/api/users/abc', { token: eve.accessToken })).status, 400);
+    assert.equal((await call('GET', '/api/users/99999999', { token: eve.accessToken })).status, 404);
+    assert.equal((await call('GET', `/api/users/${bob.id}`)).status, 403, 'needs login');
+  });
+
   await t.test('real-time chat is private to the two friends', async () => {
     const connectAs = (user) => new Promise((resolve, reject) => {
       const socket = io(API, { auth: { token: user.accessToken } });

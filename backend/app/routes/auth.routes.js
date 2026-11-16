@@ -32,5 +32,4 @@ module.exports = function (app) {
 
   app.get("/api/user/info", verifyToken, controller.userInfo);
 
-  app.get("/api/user/:id", verifyToken, controller.getUserById);
 };
