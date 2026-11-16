@@ -41,19 +41,12 @@ app.use('/upload', express.static(path.join(__dirname, 'app/upload')));
 app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
+const { runMigrations } = require("./app/migrate");
 
-// Roles must exist before anyone can sign up (new users get role id 1).
-const seedRoles = () => Promise.all(
-  [[1, 'user'], [2, 'moderator'], [3, 'admin']].map(([id, name]) =>
-    db.role.findOrCreate({ where: { id }, defaults: { name } })
-  )
-);
-
-// Clean up leftovers from older versions of the app:
-// - users created before the Supabase project moved still point at the old
-//   project's default images, so repoint them to the current project;
-// - the template used to give everyone the job "TV Model", so clear it.
-const fixLegacyDefaults = async () => {
+// Users created before the Supabase project moved still point at the old
+// project's default images; repoint them to the current project. (This runs
+// here rather than in a migration because it depends on SUPABASE_IMAGE_URL.)
+const fixDefaultImages = async () => {
   const { Op } = db.Sequelize;
   const { DEFAULT_PFP, DEFAULT_COVER } = require('./app/models/user.model.js');
   const [[pfpCount], [coverCount]] = await Promise.all([
@@ -67,17 +60,14 @@ const fixLegacyDefaults = async () => {
   if (pfpCount || coverCount) {
     console.log(`Updated default images: ${pfpCount} profile, ${coverCount} cover`);
   }
-
-  const [jobCount] = await db.user.update({ job: null }, { where: { job: 'TV Model' } });
-  if (jobCount) {
-    console.log(`Cleared template job "TV Model" for ${jobCount} users`);
-  }
 };
 
-db.sequelize.sync().then(seedRoles).then(fixLegacyDefaults).then(() => {
-  console.log('Database synchronized');
+// Schema changes live in app/migrations and are applied on startup.
+runMigrations().then(fixDefaultImages).then(() => {
+  console.log('Database ready');
 }).catch((err) => {
-  console.error('Error synchronizing the database:', err);
+  console.error('Error preparing the database:', err);
+  process.exit(1);
 });
 
 app.options('*', cors(corsOptions)); // handle preflight requests
