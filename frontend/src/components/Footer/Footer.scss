@@ -1,134 +1,153 @@
 @use '@assets/webColors' as *;
 
 .Footer {
-  padding: 75px 100px;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 30px;
-  background-color: $white;
   position: relative;
+  background-color: $white;
+  border-top: 1px solid rgba(23, 12, 48, 0.06);
 
+  // slim brand accent along the top edge
   &::before {
-    background: rgba(0, 0, 0, 0) linear-gradient(to right, #ffffff 0%, $primary 50%, #ffffff 100%) repeat scroll 0 0;
-    content: "";
-    height: 5px;
+    content: '';
     position: absolute;
-    width: 100%;
-    top: 0;
+    top: -1px;
     left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, transparent, $primary 50%, transparent);
+    opacity: 0.6;
   }
 
-  &__info {
+  &__inner {
+    // the newsfeed's fixed side bars are 70px wide on desktop, so keep clear of them
+    width: min(1100px, 100% - 180px);
+    margin: 0 auto;
+    padding: 40px 0 24px;
+  }
+
+  &__top {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    font-size: 14px;
-    color: $dark-grey;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+  }
 
-    p {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-
-      span {
-        font-family: "Bootstrap-icons";
-      }
-    }
+  &__brand {
+    max-width: 380px;
 
     img {
+      display: block;
       width: 120px;
-      height: 34px;
-    }
-  }
-
-
-
-  &-ul {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    .Title {
-      margin-bottom: 35px;
+      margin-bottom: 12px;
     }
 
-    li {
+    p {
       font-size: 14px;
-      display: flex;
-      gap: 20px;
-      align-items: center;
+      line-height: 1.6;
+      color: $grey1;
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+
+    a {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
       color: $dark-grey;
-      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
 
-
-      a {
-        position: relative;
-        color: $dark-grey;
-        font-weight: 400;
-
-        &:hover::before {
-          opacity: 1;
-          bottom: 0px;
-        }
-
-        &::before {
-          position: absolute;
-          bottom: -5px;
-          left: 0;
-          content: '';
-          width: 100%;
-          height: 1px;
-          background-color: $dark-grey;
-          transition: 200ms;
-          opacity: 0;
-        }
+      &:hover {
+        background-color: $grey-bg;
+        color: $black;
       }
 
+      &.active {
+        color: $primary;
+      }
 
-      span {
-        font-family: "Bootstrap-icons";
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 2px;
       }
     }
   }
 
-}
+  &__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid $grey-bg;
 
-.FooterBottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 100px;
-  background-color: $grey-bg;
+    p {
+      font-size: 13px;
+      color: $grey1;
+    }
+  }
 
-  p {
+  &__to-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    font-family: inherit;
     font-size: 13px;
-    color: $dark-grey;
+    font-weight: 500;
+    color: $primary;
+    cursor: pointer;
+    transition: background-color 150ms;
+
+    &:hover {
+      background-color: rgba(109, 63, 214, 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
   }
 }
 
+// Tablets: no side bars, so use the normal page gutter.
+@media screen and (max-width: 1023px) {
+  .Footer__inner {
+    width: auto;
+    padding: 36px 30px 24px;
+  }
+}
 
+// Phones: stack everything; links in two columns.
 @media screen and (max-width: 767px) {
   .Footer {
-    display: flex;
-    flex-direction: column;
-    padding: 50px 20px;
-
-    .Title {
-      width: 100%;
+    &__inner {
+      padding: 32px 20px 20px;
     }
 
-    &-ul {
-      flex-direction: row;
-      flex-wrap: wrap;
-
-      li {
-        width: 40%;
-      }
+    &__top {
+      flex-direction: column;
+      gap: 20px;
     }
 
-  }
+    &__links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin: 0 -12px;
+      width: calc(100% + 24px);
+    }
 
-  .FooterBottom {
-    padding: 20px;
+    &__bottom {
+      margin-top: 24px;
+    }
   }
 }

@@ -32,10 +32,14 @@
     section {
       padding: 30px 30px;
       grid-template-columns: 220px minmax(0, 1fr);
+      // rows fit the cards; the feed spans both, so the left column has no gap
+      grid-template-rows: auto 1fr;
 
+      // Shortcuts scrolls away normally...
       > :nth-child(1) {
         grid-column: 1;
         grid-row: 1;
+        position: static;
       }
 
       > :nth-child(2) {
@@ -43,10 +47,14 @@
         grid-row: 1 / span 2;
       }
 
+      // ...and Friends stays pinned under the navbar once it reaches it, so
+      // the two cards never overlap
       > :nth-child(3) {
         grid-column: 1;
         grid-row: 2;
-        position: static;
+        align-self: start;
+        position: sticky;
+        top: 67px;
       }
     }
   }
