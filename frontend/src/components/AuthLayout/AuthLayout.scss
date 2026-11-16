@@ -1,0 +1,310 @@
+@use '@assets/webColors' as *;
+
+.AuthLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  background-color: $grey-bg;
+
+  // ---------- brand panel ----------
+  &__brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 40px 48px;
+    overflow: hidden;
+    background: radial-gradient(circle at 20% 10%, $primary-light 0%, $primary 45%, $primary-dark 100%);
+    color: $white;
+  }
+
+  &__logo {
+    width: 130px;
+  }
+
+  &__pitch {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+
+    h2 {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      opacity: 0.92;
+
+      svg {
+        flex-shrink: 0;
+        padding: 3px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.18);
+      }
+    }
+  }
+
+  &__planet {
+    align-self: flex-end;
+    width: min(340px, 80%);
+    margin: -40px -30px -60px 0;
+    opacity: 0.95;
+  }
+
+  // ---------- form ----------
+  &__main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  &__card {
+    width: min(420px, 100%);
+    padding: 36px 32px;
+    border-radius: 18px;
+    background-color: $white;
+    box-shadow: 0 12px 40px rgba(23, 12, 48, 0.08);
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: $black;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 24px;
+    }
+  }
+
+  &__card-logo {
+    display: none;
+    width: 110px;
+    margin-bottom: 20px;
+  }
+
+  &__subtitle {
+    margin-top: 6px;
+    font-size: 15px;
+    color: $grey1;
+  }
+
+  &__submit {
+    margin-top: 6px;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background-color: $primary;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: $white;
+    cursor: pointer;
+    transition: background-color 150ms, opacity 150ms;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+
+  &__footer {
+    margin-top: 22px;
+    font-size: 14px;
+    color: $grey1;
+    text-align: center;
+
+    a {
+      font-weight: 600;
+      color: $primary;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// ---------- fields ----------
+.AuthField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $dark-grey;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d9d4e6;
+    border-radius: 10px;
+    background-color: $white;
+    font-family: inherit;
+    font-size: 15px;
+    color: $black;
+    outline: none;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(109, 63, 214, 0.15);
+    }
+  }
+
+  &__password {
+    position: relative;
+
+    input {
+      padding-right: 64px;
+    }
+
+    button {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      padding: 6px 8px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: $primary;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $grey-bg;
+      }
+    }
+  }
+
+  &__error {
+    font-size: 13px;
+    color: #c0392b;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  &__hint {
+    font-size: 13px;
+    color: $grey1;
+  }
+
+  &.invalid input {
+    border-color: #c0392b;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.15);
+    }
+  }
+}
+
+// Password rules checklist (signup)
+.PasswordRules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  margin-top: -6px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: $grey1;
+
+    &::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #d9d4e6;
+    }
+
+    &.met {
+      color: #2e7d32;
+
+      &::before {
+        background-color: #43a047;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .AuthLayout {
+    &__brand {
+      padding: 32px;
+    }
+
+    &__pitch h2 {
+      font-size: 28px;
+    }
+  }
+}
+
+// Phones: compact brand header above the form.
+@media screen and (max-width: 767px) {
+  .AuthLayout {
+    grid-template-columns: 1fr;
+
+    &__brand {
+      flex-direction: row;
+      align-items: center;
+      padding: 18px 20px;
+    }
+
+    &__pitch,
+    &__planet {
+      display: none;
+    }
+
+    &__logo {
+      width: 112px;
+    }
+
+    &__main {
+      align-items: flex-start;
+      padding: 24px 16px 40px;
+    }
+
+    &__card {
+      padding: 28px 20px;
+    }
+  }
+}
