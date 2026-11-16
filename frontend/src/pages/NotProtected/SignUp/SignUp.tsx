@@ -21,13 +21,10 @@ const initialValues: TsignUpFormState = {
 
 const validationSchema = object({
   fname: string().min(4).max(30).required("full name is a required field"),
-  username: string().min(3).max(20)
-    .matches(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, "_" and "."')
-    .required(),
+  username: string().min(3).max(20).required(),
   email: string().email().required(),
   password: string()
     .min(8, 'Password must be 8 characters long')
-    .max(72, 'Password must be at most 72 characters long')
     .matches(/[0-9]/, 'Password requires a number')
     .matches(/[a-z]/, 'Password requires a lowercase letter')
     .matches(/[A-Z]/, 'Password requires an uppercase letter')
