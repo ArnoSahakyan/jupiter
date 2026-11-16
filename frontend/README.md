@@ -98,7 +98,7 @@ The app is a static site. `npm run build` outputs `dist/`.
 
 `vercel.json` does two things on Vercel:
 
-- proxies `/api/*` to the backend, so the API is on the same domain as the app and the refresh cookie is first-party in every browser (Safari and others block third-party cookies). Update the backend address in it;
+- proxies `/api/*` to the backend, so the API is on the same domain as the app and the refresh cookie is first-party in every browser (Safari and others block third-party cookies). Replace its placeholder backend address (`your-backend.example.com`) with yours;
 - sends every other route to `index.html`, so deep links like `/messages` work.
 
 Set these in the hosting provider's environment settings: `VITE_API_URL` empty, and `VITE_SOCKET_URL` to the backend URL (proxies don't carry WebSockets).

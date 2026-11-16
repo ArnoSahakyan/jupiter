@@ -75,9 +75,9 @@ The frontend is checked with `npm run lint` and `npm run build` (which type-chec
 
 ## Deployment notes
 
-- **Frontend (Vercel):** `frontend/vercel.json` proxies `/api` to the backend, so the refresh cookie is first-party in every browser (Safari blocks third-party cookies). Set `VITE_API_URL` to empty and `VITE_SOCKET_URL` to the backend URL, and update the backend address in `vercel.json`.
+- **Frontend (Vercel):** `frontend/vercel.json` proxies `/api` to the backend, so the refresh cookie is first-party in every browser (Safari blocks third-party cookies). Replace the placeholder backend address in `vercel.json`, set `VITE_API_URL` to empty and `VITE_SOCKET_URL` to the backend URL.
 - **Backend (e.g. Render):** set `NODE_ENV=production`, `CORS` to the frontend URL, and the variables from `backend/.env.example`. Migrations run on startup.
 
 ## History
 
-Jupiter started as **Winku**, a university project by Arno Sahakyan (separate [frontend](https://github.com/ArnoSahakyan/winku) and [backend](https://github.com/ArnoSahakyan/winkuback) repositories). It was then rebranded, hardened and merged into this repository with both histories preserved.
+Jupiter started as **Winku**, a university project by Arno Sahakyan with separate frontend and backend repositories. It was then rebranded, hardened and merged into this repository with both histories preserved.
