@@ -36,10 +36,11 @@ const seedRoles = () => Promise.all(
   )
 );
 
-// Users created before the Supabase project moved still point at the old
-// project's default images. Repoint any default image that isn't on the
-// current project.
-const fixDefaultImages = async () => {
+// Clean up leftovers from older versions of the app:
+// - users created before the Supabase project moved still point at the old
+//   project's default images, so repoint them to the current project;
+// - the template used to give everyone the job "TV Model", so clear it.
+const fixLegacyDefaults = async () => {
   const { Op } = db.Sequelize;
   const { DEFAULT_PFP, DEFAULT_COVER } = require('./app/models/user.model.js');
   const [[pfpCount], [coverCount]] = await Promise.all([
@@ -53,9 +54,14 @@ const fixDefaultImages = async () => {
   if (pfpCount || coverCount) {
     console.log(`Updated default images: ${pfpCount} profile, ${coverCount} cover`);
   }
+
+  const [jobCount] = await db.user.update({ job: null }, { where: { job: 'TV Model' } });
+  if (jobCount) {
+    console.log(`Cleared template job "TV Model" for ${jobCount} users`);
+  }
 };
 
-db.sequelize.sync().then(seedRoles).then(fixDefaultImages).then(() => {
+db.sequelize.sync().then(seedRoles).then(fixLegacyDefaults).then(() => {
   console.log('Database synchronized');
 }).catch((err) => {
   console.error('Error synchronizing the database:', err);

@@ -25,7 +25,7 @@ exports.updateUserData = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     user.fname = fname !== undefined ? fname : user.fname;
-    user.job = job !== undefined ? job : user.job;
+    user.job = job === undefined ? user.job : ((typeof job === 'string' && job.trim()) || null);
     await user.save();
 
     const response = {

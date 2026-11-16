@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     job: {
       type: Sequelize.STRING,
-      defaultValue: "TV Model"
+      allowNull: true
     }
 
   });

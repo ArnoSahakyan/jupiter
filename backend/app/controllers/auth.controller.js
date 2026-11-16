@@ -39,7 +39,9 @@ exports.signup = async (req, res) => {
         fname: req.body.fname,
         username: req.body.username.toLowerCase(),
         email: req.body.email.toLowerCase(),
-        password: bcrypt.hashSync(req.body.password, 8)
+        password: bcrypt.hashSync(req.body.password, 8),
+        // Set explicitly: older databases still have "TV Model" as the column default.
+        job: null
       }, { transaction });
 
       // Every new account gets the plain "user" role (id 1). Roles sent by the
