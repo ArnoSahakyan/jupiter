@@ -9,16 +9,12 @@
   gap: 20px;
   position: relative;
 
+  // validation message, under the text box
   .input-wrapper {
-    position: absolute;
-    bottom: 30px;
-    width: 100%;
-
     .error {
-      font-size: 14px;
-      color: $red;
-      position: absolute;
-      // bottom: -25px;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #d6336c;
     }
   }
 
