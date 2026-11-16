@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../../api/axios";
 import { TFriend, TRequest, Tunassocitaed } from "./friendsSlice";
-const url = import.meta.env.VITE_BACK_BASE_URL;
+import { API_URL as url } from '../../../api/config';
 
 export const getFriendsApi = createAsyncThunk('friends_request/getFriends', async () => {
   const response = await api.get(`${url}/api/friends`);

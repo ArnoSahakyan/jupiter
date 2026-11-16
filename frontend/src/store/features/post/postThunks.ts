@@ -15,7 +15,7 @@ export type TresponseComment = TReplies & {
   userId: number
 }
 
-const url = import.meta.env.VITE_BACK_BASE_URL;
+import { API_URL as url } from '../../../api/config';
 
 const updatePfpPaths = (comments: (TComments | TReplies)[] | null): (TComments | TReplies)[] | null => {
   if (!comments || comments.length === 0) {

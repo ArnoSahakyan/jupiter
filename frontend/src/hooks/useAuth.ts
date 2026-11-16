@@ -5,8 +5,14 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { AppDispatch, persistor, store } from "../store/setup";
 import { changeOnlineStatus, loginUser, signupUser } from "../store/features/userInfo/userThunks";
 import { toast } from 'react-toastify';
+import axios from "axios";
+import { API_URL } from "../api/config";
 import { TlogInFormState } from "../pages/NotProtected/LogIn/LogIn";
 import { TsignUpFormState } from "../pages/NotProtected/SignUp/SignUp";
+
+// Ask the server to clear the httpOnly refresh-token cookie (best effort).
+const clearServerSession = () =>
+  axios.post(`${API_URL}/api/auth/logout`, null, { withCredentials: true }).catch(() => undefined);
 
 export const notifyError = (error: string) => {
   toast.error(error)
@@ -69,6 +75,7 @@ const useAuth = () => {
 
   const logout = async () => {
     dispatch(changeOnlineStatus({ onlineStatus: "offline" }))
+      .then(() => clearServerSession())
       .then(() => dispatch(userLogout()))
       .then(() => persistor.purge())
       .then(() => navigate('/auth/signin'))
@@ -86,6 +93,7 @@ const useAuth = () => {
 
 export const performLogout = async (navigate?: NavigateFunction) => {
   try {
+    await clearServerSession();
     store.dispatch(userLogout());
     await persistor.purge();
     if (navigate) {

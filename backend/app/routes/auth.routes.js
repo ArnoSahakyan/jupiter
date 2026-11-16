@@ -28,6 +28,8 @@ module.exports = function (app) {
 
   app.post("/api/auth/refresh", authIpLimiter, controller.refreshToken);
 
+  app.post("/api/auth/logout", controller.logout);
+
   app.get("/api/user/info", verifyToken, controller.userInfo);
 
   app.get("/api/user/:id", verifyToken, controller.getUserById);

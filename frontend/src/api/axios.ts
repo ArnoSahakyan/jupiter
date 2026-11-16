@@ -2,7 +2,7 @@ import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { store } from "../store/setup";
 import { setAccessToken } from "../store/features/userInfo/userInfoSlice";
 import { performLogout } from "../hooks/useAuth";
-const url = import.meta.env.VITE_BACK_BASE_URL;
+import { API_URL as url } from './config';
 
 export const api = axios.create({
   baseURL: url,
@@ -26,16 +26,13 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const userInfo = store.getState().userInfo;
     const prevRequest = error?.config;
     if (error?.response?.status === 401 && !prevRequest?.sent) {
       prevRequest.sent = true;
       try {
         const newAccessToken = (
-          await axios.post(`${url}/api/auth/refresh`,
-            { refreshToken: userInfo.data.refreshToken },
-            { withCredentials: true }
-          )
+          // the refresh token is sent automatically as an httpOnly cookie
+          await axios.post(`${url}/api/auth/refresh`, null, { withCredentials: true })
         );
         store.dispatch(setAccessToken(newAccessToken.data.accessToken));
         prevRequest.headers["Authorization"] = `Bearer ${newAccessToken.data.accessToken}`;

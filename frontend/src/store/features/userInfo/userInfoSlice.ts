@@ -11,7 +11,6 @@ export type TuserInfo = {
   job: string | undefined;
   onlineStatus: string | undefined;
   accessToken: string | undefined;
-  refreshToken: string | undefined;
   roles: string[] | undefined;
 }
 
@@ -31,7 +30,6 @@ const initialData = {
   job: undefined,
   onlineStatus: undefined,
   accessToken: undefined,
-  refreshToken: undefined,
   roles: undefined,
 }
 
@@ -116,13 +114,12 @@ const userInfoSlice = createSlice({
     getCoverPhoto: (state) => state.data.coverPhoto,
     getStatus: (state) => state.data.onlineStatus,
     getAccessToken: (state) => state.data.accessToken,
-    getRefreshToken: (state) => state.data.refreshToken,
     getLoading: state => state.loading,
     getUserError: state => state.error
   }
 });
 
 export const { setStatus, setAccessToken, userLogout } = userInfoSlice.actions;
-export const { getUserID, getUsername, getName, getEmail, getPfp, getJob, getCoverPhoto, getStatus, getAccessToken, getRefreshToken, getLoading, getUserError } = userInfoSlice.selectors;
+export const { getUserID, getUsername, getName, getEmail, getPfp, getJob, getCoverPhoto, getStatus, getAccessToken, getLoading, getUserError } = userInfoSlice.selectors;
 
 export default userInfoSlice.reducer;

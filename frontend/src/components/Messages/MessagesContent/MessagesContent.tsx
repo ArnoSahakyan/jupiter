@@ -10,7 +10,7 @@ import io, { Socket } from 'socket.io-client';
 import { AppDispatch } from '../../../store/setup'
 import SecondaryLoader from '../../shared/SecondaryLoader/SecondaryLoader'
 import './MessagesContent.scss'
-const url = import.meta.env.VITE_BACK_BASE_URL;
+import { SOCKET_URL } from '../../../api/config';
 
 export default function MessagesContent() {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,7 +25,7 @@ export default function MessagesContent() {
 
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io(url, {
+    const newSocket = io(SOCKET_URL, {
       auth: {
         token,
       },

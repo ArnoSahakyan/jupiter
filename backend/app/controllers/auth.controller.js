@@ -2,6 +2,7 @@ require('dotenv').config()
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const db = require("../models");
+const { setRefreshCookie, clearRefreshCookie, readRefreshCookie } = require("../utils/refreshCookie");
 
 const User = db.user;
 const Role = db.role;
@@ -83,6 +84,9 @@ exports.signin = async (req, res) => {
     const roles = await user.getRoles();
     const authorities = roles.map(role => "ROLE_" + role.name.toUpperCase());
 
+    // The refresh token goes into an httpOnly cookie, not the response body.
+    setRefreshCookie(res, refreshToken);
+
     res.status(200).send({
       id: user.id,
       fname: user.fname,
@@ -93,7 +97,6 @@ exports.signin = async (req, res) => {
       job: user.job,
       onlineStatus: user.onlineStatus,
       accessToken,
-      refreshToken,
       roles: authorities,
     });
   } catch (err) {
@@ -102,15 +105,16 @@ exports.signin = async (req, res) => {
 };
 
 exports.refreshToken = (req, res) => {
-  const refreshToken = req.body.refreshToken;
+  const refreshToken = readRefreshCookie(req);
 
   if (!refreshToken) {
-    return res.status(403).json({ message: "Refresh token is required!" });
+    return res.status(401).json({ message: "Not logged in" });
   }
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ message: "Invalid refresh token!" });
+      clearRefreshCookie(res);
+      return res.status(401).json({ message: "Session expired, please log in again" });
     }
 
     const userId = decoded.id;
@@ -131,6 +135,11 @@ exports.refreshToken = (req, res) => {
         res.status(500).json({ message: err.message });
       });
   });
+};
+
+exports.logout = (req, res) => {
+  clearRefreshCookie(res);
+  res.status(200).json({ message: "Logged out" });
 };
 
 exports.userInfo = async (req, res) => {

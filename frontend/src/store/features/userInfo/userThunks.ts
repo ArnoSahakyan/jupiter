@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { isAxiosError } from 'axios';
 import { api } from '../../../api/axios';
 import { Tunassocitaed } from '../friends/friendsSlice';
-const url = import.meta.env.VITE_BACK_BASE_URL;
+import { API_URL as url } from '../../../api/config';
 
 // Pull the server's message (e.g. "Username is already in use") out of an axios error.
 const serverMessage = (error: unknown) =>
