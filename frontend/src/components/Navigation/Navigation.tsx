@@ -1,13 +1,12 @@
 import './Navigation.scss';
 import { useSelector } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ROUTES from '../../routes/routes';
 import BurgerMenu from '../BurgerMenu/BurgerMenu';
 import { getName, getPfp, getStatus, getUsername } from '../../store/features/userInfo/userInfoSlice';
 import useAuth from '../../hooks/useAuth';
-import Modal from '../shared/Modal/Modal'
-import EditForm from '../EditForm/EditForm';
+import EditProfileModal from '../EditForm/EditForm';
 import SearchUser from '../SearchUser/SearchUser';
 import StatusSwitch from '../shared/StatusSwitch/StatusSwitch';
 import { appLinks } from '../shared/navLinks';
@@ -29,6 +28,7 @@ export default function Navigation() {
   const accountRef = useRef<HTMLDivElement>(null);
 
   const toggleEdit = () => setEditOpen(!editOpen);
+  const closeEdit = useCallback(() => setEditOpen(false), []);
 
   // The account menu closes on outside click, Escape, or navigating.
   useEffect(() => {
@@ -51,14 +51,7 @@ export default function Navigation() {
 
   return (
     <>
-      {editOpen && (
-        <Modal toggleModal={toggleEdit} isOpen={editOpen}>
-          <div className="EditForm">
-            <h2>Edit Your Info</h2>
-            <EditForm toggleModal={toggleEdit} />
-          </div>
-        </Modal>
-      )}
+      {editOpen && <EditProfileModal onClose={closeEdit} />}
 
       <BurgerMenu onEditProfile={toggleEdit} />
 

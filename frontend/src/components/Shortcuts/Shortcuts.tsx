@@ -2,9 +2,8 @@ import { Link } from 'react-router-dom';
 import ROUTES from '../../routes/routes';
 import Title from '../shared/Title/Title';
 import useAuth from '../../hooks/useAuth';
-import Modal from '../shared/Modal/Modal';
-import EditForm from '../EditForm/EditForm';
-import { useState } from 'react';
+import EditProfileModal from '../EditForm/EditForm';
+import { useCallback, useState } from 'react';
 import './Shortcuts.scss'
 
 type TshortcutList = {
@@ -21,6 +20,7 @@ export default function Shortcuts() {
   const toggleModal = () => {
     setIsOpen(!isOpen)
   }
+  const closeModal = useCallback(() => setIsOpen(false), [])
 
   const shortcuts: TshortcutList[] = [
     {
@@ -62,15 +62,7 @@ export default function Shortcuts() {
 
   return (
     <>
-      {isOpen
-        ? <Modal toggleModal={toggleModal} isOpen={isOpen}>
-          <div className="EditForm">
-            <h2>Edit Your Info</h2>
-            <EditForm toggleModal={toggleModal} />
-          </div>
-        </Modal>
-        : null
-      }
+      {isOpen && <EditProfileModal onClose={closeModal} />}
 
       <div className='Shortcuts'>
         <Title title={<>Shortcuts</>} />
