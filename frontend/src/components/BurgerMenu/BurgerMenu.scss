@@ -1,212 +1,350 @@
-/* ---------------- Navbar and burger menu ------------------ */
+/* ---------------- Mobile header and menu (up to 767px) ------------------ */
+@use 'sass:color';
 @use '@assets/webColors' as *;
+
+$drawer-width: min(320px, 85vw);
+$ease: cubic-bezier(0.32, 0.72, 0, 1);
 
 .BurgerMenu {
   display: none;
-  width: '100%';
 
-  nav {
-    width: 100%;
-    background-color: $primary;
+  &__bar {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    padding: 16px;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: $primary;
+  }
 
-    a {
-      img {
-        width: 120px;
-        object-fit: cover;
-      }
+  &__logo img {
+    display: block;
+    width: 112px;
+  }
+
+  // Three lines that turn into an X
+  &__toggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 150ms;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba(255, 255, 255, 0.15);
     }
 
-    .burger-menu {
-      width: 64px;
-      height: 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: space-between;
-      cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid $white;
+      outline-offset: 2px;
+    }
 
-      .burger-bar {
-        width: 64px;
-        height: 8px;
-        background-color: $white;
-        border-radius: 8px;
-      }
+    span {
+      position: absolute;
+      left: 9px;
+      width: 22px;
+      height: 2px;
+      border-radius: 2px;
+      background-color: $white;
+      transition: transform 250ms $ease, opacity 150ms;
+
+      &:nth-child(1) { top: 13px; }
+      &:nth-child(2) { top: 19px; }
+      &:nth-child(3) { top: 25px; }
+    }
+
+    &.open span {
+      &:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      &:nth-child(2) { opacity: 0; }
+      &:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
     }
   }
 
-  .menu {
-    padding-top: 20px;
-    width: 75%;
-    height: 100vh;
-    background-color: $primary-light;
-    color: $white;
+  &__backdrop {
     position: fixed;
-    transform-origin: left;
-    transition: 200ms;
-    transition-timing-function: ease-in-out;
-    top: 0;
-    z-index: 9;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(23, 12, 48, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 250ms, visibility 0s 250ms;
 
-    a {
-      color: $white;
-      display: flex;
-      text-decoration: none;
-      position: relative;
-
-      span {
-        display: none;
-        position: absolute;
-        right: 20px;
-        font-size: 30px;
-        color: $primary;
-        font-weight: 900;
-      }
+    &.open {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 250ms;
     }
+  }
 
+  &__drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: $drawer-width;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
+    padding: 16px 16px 24px;
+    overflow-y: auto;
+    background-color: $white;
+    border-radius: 16px 0 0 16px;
+    box-shadow: -12px 0 32px rgba(23, 12, 48, 0.18);
+    transform: translateX(100%);
+    visibility: hidden; // also takes the links out of the tab order when closed
+    transition: transform 300ms $ease, visibility 0s 300ms;
 
-    h2 {
-      text-align: center;
-      border-bottom: 1px solid $white;
-      padding-bottom: 10px;
-      text-transform: uppercase;
+    &.open {
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 300ms $ease;
+    }
+  }
+
+  &__drawer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  &__drawer-logo {
+    width: 104px;
+  }
+
+  &__close {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background-color: $grey-bg;
+    color: $dark-grey;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: color.adjust($grey-bg, $lightness: -6%);
+    }
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: $grey-bg;
+    color: $dark-grey;
+
+    &:hover {
+      background-color: color.adjust($grey-bg, $lightness: -4%);
+    }
+  }
+
+  &__avatar {
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      display: block;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
-    .bLinks {
+    // status dot
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid $white;
+      background-color: $offline;
+    }
+
+    &.online::after { background-color: $online; }
+    &.away::after { background-color: $away; }
+  }
+
+  &__profile-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    strong {
+      font-size: 16px;
+      font-weight: 600;
+      color: $black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: 400;
+      color: $primary;
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 8px 0;
+
+    a {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
-      transition: 300ms;
-      overflow-y: auto;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      color: $dark-grey;
+      transition: background-color 150ms, color 150ms;
 
-      li {
-        font-size: 20px;
-        border-bottom: 1px solid $white;
-        transition: 200ms;
+      .icon {
+        display: grid;
+        place-items: center;
+        width: 20px;
+        color: $grey1;
 
-        p {
-          padding-left: 10px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+        svg {
+          width: 18px;
+          height: 18px;
         }
+      }
 
-        .arrow {
-          font-family: "Bootstrap-icons";
-          transition: 200ms;
+      &:hover {
+        background-color: $grey-bg;
+      }
 
-          &.active {
-            transform: rotate(-180deg);
-          }
+      &.active {
+        background-color: rgba(109, 63, 214, 0.1);
+        color: $primary;
+        font-weight: 600;
 
-          &.not-active {
-            transform: rotate(0);
-          }
+        .icon {
+          color: $primary;
         }
-
-        .bSublinks {
-          margin-top: 10px;
-          width: 100%;
-          background-color: $primary-mid;
-          transform-origin: top;
-          transition: 200ms;
-
-          &.not-active {
-            height: 0;
-            transform: scaleY(0);
-          }
-
-          &.active {
-            transform: scaleY(1);
-            height: unset;
-          }
-
-          li {
-            padding: 15px;
-            transition: 200ms;
-
-            &:hover {
-              background-color: $dark-grey;
-              padding-left: 25px;
-            }
-          }
-        }
-
       }
     }
+  }
 
-    &.hidden {
-      transform: scaleX(0);
+  &__status {
+    padding: 12px 0;
+    border-top: 1px solid $grey-bg;
+
+    p {
+      margin: 0 0 8px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: $grey1;
     }
 
-    &.visible {
-      transform: scaleX(1);
+    div {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 10px;
+      background-color: $grey-bg;
+    }
+
+    button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 4px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      text-transform: capitalize;
+      color: $dark-grey;
+      cursor: pointer;
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: $offline;
+      }
+
+      &.online .dot { background-color: $online; }
+      &.away .dot { background-color: $away; }
+
+      &.selected {
+        background-color: $white;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(23, 12, 48, 0.12);
+      }
     }
   }
 
-  /* ------------- sliding menu ------------------ */
+  &__actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 12px;
+    border-top: 1px solid $grey-bg;
 
-  /* ----- animations--------- */
-  /* clicked */
-  .burger-bar.clicked:nth-child(1) {
-    transform: rotate(45deg) translate(12px, 20px);
-    transition: ease-out 0.5s;
-  }
+    button {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      color: $dark-grey;
+      text-align: left;
+      cursor: pointer;
 
-  .burger-bar.clicked:nth-child(2) {
-    transform: scale(0.1);
-    transition: ease-out 0.5s;
-  }
+      svg {
+        width: 18px;
+        color: $grey1;
+      }
 
-  .burger-bar.clicked:nth-child(3) {
-    transform: rotate(135deg) translate(-8px, 16px);
-    transition: ease-out 0.5s;
-  }
+      &:hover {
+        background-color: $grey-bg;
+      }
 
-  /* unclicked */
-  .burger-bar.unclicked {
-    transform: rotate(0) translate(0);
-    transition: cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s;
+      &.logout,
+      &.logout svg {
+        color: #c0392b;
+      }
+    }
   }
 }
 
 @media screen and (max-width: 767px) {
   .BurgerMenu {
     display: block;
-
-    .burger-menu {
-      width: 64px;
-      height: 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: space-between;
-      cursor: pointer;
-      transform: scale(0.5);
-
-      .burger-bar {
-        width: 64px;
-        height: 8px;
-        background-color: green;
-        border-radius: 8px;
-      }
-    }
   }
+}
 
-  .menu {
-    width: 100%;
-
-    a {
-      span {
-        display: block;
-      }
-    }
+@media (prefers-reduced-motion: reduce) {
+  .BurgerMenu__drawer,
+  .BurgerMenu__backdrop,
+  .BurgerMenu__toggle span {
+    transition: none;
   }
 }

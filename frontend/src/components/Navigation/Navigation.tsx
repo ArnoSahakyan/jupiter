@@ -101,7 +101,7 @@ export default function Navigation() {
         </Modal>
       )}
 
-      <BurgerMenu menuLinks={dropDownMenu} />
+      <BurgerMenu onEditProfile={toggleModal} />
 
       <div className='Navigation'>
         <div>
