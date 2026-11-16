@@ -85,7 +85,7 @@ To change the schema, add a new file in `app/migrations` (never edit an applied 
 ```sh
 npm test                              # unit tests: no database or server needed
 npm run test:e2e                      # end-to-end against a running API (API_URL, default http://localhost:8080)
-RUN_UPLOAD_TESTS=1 npm run test:e2e   # also image uploads against the Supabase bucket (deletes what it uploads)
+RUN_UPLOAD_TESTS=1 npm run test:e2e   # also image uploads against the Supabase bucket (keeps the test account's small profile photo)
 ```
 
 The end-to-end tests sign up their own users on each run, and are skipped if the API isn't reachable.

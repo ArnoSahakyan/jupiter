@@ -68,7 +68,7 @@ npm run dev
 cd backend
 npm test                              # unit tests, no database needed
 npm run test:e2e                      # end-to-end, against a running API (e.g. docker compose up)
-RUN_UPLOAD_TESTS=1 npm run test:e2e   # also tests image uploads against Supabase (cleans up after itself)
+RUN_UPLOAD_TESTS=1 npm run test:e2e   # also tests image uploads against Supabase (adds one small profile photo per run)
 ```
 
 The frontend is checked with `npm run lint` and `npm run build` (which type-checks).
