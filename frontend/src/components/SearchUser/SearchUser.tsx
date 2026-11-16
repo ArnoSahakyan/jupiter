@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import IconSearch from '../shared/Icons/IconSearch';
 import { useDispatch } from 'react-redux';
 import { TsearchedUsers, searchUsers } from '../../store/features/userInfo/userThunks';
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import Friend from '../FriendsBar/Friend/Friend';
 import { AppDispatch } from '../../store/setup';
 import SecondaryLoader from '../shared/SecondaryLoader/SecondaryLoader';
