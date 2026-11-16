@@ -12,7 +12,8 @@ const initialValues = {
 };
 
 const validationSchema = object({
-  message: string().required()
+  // must match the backend limit (messages.message is varchar(255))
+  message: string().trim().required().max(255, 'Messages can be at most 255 characters')
 })
 
 export default function MessageInput({ friend, socket }: { friend: TFriendBack, socket: Socket }) {
@@ -55,6 +56,7 @@ export default function MessageInput({ friend, socket }: { friend: TFriendBack, 
               as="textarea"
               name="message"
               placeholder="Write your message..."
+              maxLength={255}
               onKeyDown={(event: React.KeyboardEvent<HTMLTextAreaElement>) => handleKeyDown(event, submitForm)}
             />
             <button disabled={isSubmitting} type="submit">&#xF6B9;</button>
