@@ -42,7 +42,7 @@ const useAuth = () => {
 
       dispatch(changeOnlineStatus({ onlineStatus: 'online' }));
     } catch (error) {
-      notifyError("Something went wrong, please try again");
+      notifyError(typeof error === 'string' ? error : "Something went wrong, please try again");
     } finally {
       setSubmitting(false);
     }
@@ -50,10 +50,8 @@ const useAuth = () => {
 
 
   const signup = async (values: TsignUpFormState, { resetForm, setSubmitting }: { resetForm: () => void, setSubmitting: (isSubmitting: boolean) => void }) => {
-    const newValues = { ...values, roles: ['user'] };
-
     try {
-      const res = await dispatch(signupUser(newValues)).unwrap();
+      const res = await dispatch(signupUser(values)).unwrap();
       if (res) {
         resetForm();
         notifySuccess(res.message);
@@ -62,11 +60,7 @@ const useAuth = () => {
         }, 750);
       }
     } catch (err) {
-      if (err instanceof Error) {
-        notifyError(err.message);
-      } else {
-        notifyError("An unknown error occurred");
-      }
+      notifyError(typeof err === 'string' ? err : "An unknown error occurred");
     } finally {
       setSubmitting(false);
     }

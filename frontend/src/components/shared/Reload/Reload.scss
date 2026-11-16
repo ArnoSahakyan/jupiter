@@ -15,7 +15,7 @@
   transition: 300ms;
 
   &:hover {
-    background-color: $blue;
+    background-color: $primary;
     transform: rotate(360deg);
 
     span {
@@ -28,6 +28,6 @@
     font-size: 24px;
     font-weight: 900;
     font-family: "Bootstrap-icons";
-    color: $blue;
+    color: $primary;
   }
 }

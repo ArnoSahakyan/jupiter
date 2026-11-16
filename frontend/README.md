@@ -1,6 +1,6 @@
-# Winku Frontend
+# Jupiter Frontend
 
-Winku is a social network website allowing users to sign up, sign in, upload images, change profile and cover pictures, upload posts with text and photo, add and delete friends, search for other users, and message them in real-time.
+Jupiter is a social network website allowing users to sign up, sign in, upload images, change profile and cover pictures, upload posts with text and photo, add and delete friends, search for other users, and message them in real-time.
 
 ## Features
 

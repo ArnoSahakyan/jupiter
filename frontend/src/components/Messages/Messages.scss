@@ -33,7 +33,7 @@
       color: $dark-grey;
 
       span {
-        color: $blue;
+        color: $primary;
         font-size: 14px;
         cursor: unset;
       }
@@ -41,7 +41,7 @@
       &::after {
         content: '';
         position: absolute;
-        background-color: $blue;
+        background-color: $primary;
         width: 58px;
         height: 2px;
         bottom: -10px;

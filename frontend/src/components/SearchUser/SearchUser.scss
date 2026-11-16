@@ -26,7 +26,7 @@
     outline: none;
 
     &:focus {
-      border-bottom: 2px solid $blue;
+      border-bottom: 2px solid $primary;
     }
 
     &.inactive {
@@ -50,7 +50,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-bottom: 2px solid $blue;
+    border-bottom: 2px solid $primary;
     max-height: 230px;
     overflow-y: auto;
 
@@ -67,7 +67,7 @@
     }
 
     .load {
-      color: $blue;
+      color: $primary;
       font-size: 14px;
       text-align: center;
       cursor: pointer;
@@ -79,7 +79,7 @@
 @media screen and (max-width: 600px) {
   .SearchUser {
     padding: 10px;
-    background-color: $blue;
+    background-color: $primary;
 
     .secondary-loader {
       top: -4px;

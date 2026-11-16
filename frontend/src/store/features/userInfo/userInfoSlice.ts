@@ -65,9 +65,7 @@ const userInfoSlice = createSlice({
           coverPhoto: action.payload.coverPhoto
         };
       })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.error = action.error.message;
-      })
+      // loginUser errors are shown by the login form itself (see useAuth.signin)
 
       .addCase(changeUserImage.fulfilled, (state, action) => {
         if (action.payload.type === "pfp") {

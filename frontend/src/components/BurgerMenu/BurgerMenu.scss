@@ -7,7 +7,7 @@
 
   nav {
     width: 100%;
-    background-color: $blue;
+    background-color: $primary;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -43,7 +43,7 @@
     padding-top: 20px;
     width: 75%;
     height: 100vh;
-    background-color: $blue-menu;
+    background-color: $primary-light;
     color: $white;
     position: fixed;
     transform-origin: left;
@@ -63,7 +63,7 @@
         position: absolute;
         right: 20px;
         font-size: 30px;
-        color: $blue;
+        color: $primary;
         font-weight: 900;
       }
     }
@@ -114,7 +114,7 @@
         .bSublinks {
           margin-top: 10px;
           width: 100%;
-          background-color: $blue-submenu;
+          background-color: $primary-mid;
           transform-origin: top;
           transition: 200ms;
 

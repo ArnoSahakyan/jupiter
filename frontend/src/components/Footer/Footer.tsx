@@ -6,10 +6,8 @@ export default function Footer() {
     <footer className='FooterBG'>
       <div className="Footer">
         <div className="Footer__info">
-          <img src="/logo.png" alt='winku logo' />
-          <p>The trio took this simple idea and built it into the world’s leading carpooling platform.</p>
-          <p><span>&#xF47F;</span> 33 new montgomery st.750 san francisco, CA USA 94105.</p>
-          <p><span>&#xF4E7;</span>  +1-56-346 345</p>
+          <img src="/logo.svg" alt='Jupiter' />
+          <p>Jupiter is a small social network for students: share what you are working on, keep up with friends and chat in real time.</p>
         </div>
 
         <ul className='Footer__social Footer-ul'>
@@ -47,7 +45,7 @@ export default function Footer() {
         </ul>
       </div>
       <div className="FooterBottom">
-        <p>© Winku 2024. All rights reserved.</p>
+        <p>© Jupiter {new Date().getFullYear()}. All rights reserved.</p>
         <div className="cards">
           <img src="/cards.png" alt='card companies' />
         </div>

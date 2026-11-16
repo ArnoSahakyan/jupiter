@@ -1,8 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { api } from '../../../api/axios';
 import { Tunassocitaed } from '../friends/friendsSlice';
 const url = import.meta.env.VITE_BACK_BASE_URL;
+
+// Pull the server's message (e.g. "Username is already in use") out of an axios error.
+const serverMessage = (error: unknown) =>
+  (isAxiosError(error) && error.response?.data?.message) || "Something went wrong, please try again";
 
 type SignupData = {
   username: string;
@@ -24,21 +28,29 @@ export type TsearchedUsers = Tunassocitaed & {
 
 export const signupUser = createAsyncThunk(
   'userInfo/signupAsync',
-  async (data: SignupData) => {
-    const response = await axios.post(`${url}/api/auth/signup`, data,
-      { withCredentials: true }
-    );
-    return response.data;
+  async (data: SignupData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${url}/api/auth/signup`, data,
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(serverMessage(error));
+    }
   }
 );
 
 export const loginUser = createAsyncThunk(
   'userInfo/loginAsync',
-  async (data: LoginData) => {
-    const response = await axios.post(`${url}/api/auth/signin`, data,
-      { withCredentials: true }
-    );
-    return response.data;
+  async (data: LoginData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${url}/api/auth/signin`, data,
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(serverMessage(error));
+    }
   }
 );
 

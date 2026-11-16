@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360" role="img" aria-label="Jupiter planet">
+  <defs>
+    <radialGradient id="body" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#F3EEFF"/><stop offset=".55" stop-color="#C9B6F5"/><stop offset="1" stop-color="#8A68E3"/>
+    </radialGradient>
+    <clipPath id="clip"><circle cx="180" cy="180" r="110"/></clipPath>
+  </defs>
+  <g fill="#FFFFFF">
+    <circle cx="52" cy="70" r="2.5" opacity=".9"/><circle cx="300" cy="48" r="2" opacity=".7"/>
+    <circle cx="322" cy="250" r="3" opacity=".8"/><circle cx="40" cy="290" r="2" opacity=".6"/>
+    <circle cx="96" cy="330" r="1.6" opacity=".7"/><circle cx="262" cy="320" r="2.2" opacity=".6"/>
+  </g>
+  <path d="M60 222 C 10 262, 90 280, 180 236" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="180" cy="180" r="110" fill="url(#body)"/>
+  <g clip-path="url(#clip)">
+    <path d="M60 112 Q180 98 300 112 L300 128 Q180 116 60 128Z" fill="#7B52DD" opacity=".45"/>
+    <path d="M60 150 Q180 136 300 150 L300 176 Q180 160 60 176Z" fill="#6D3FD6" opacity=".55"/>
+    <path d="M60 196 Q180 210 300 196 L300 214 Q180 228 60 214Z" fill="#5B2FC2" opacity=".45"/>
+    <path d="M60 238 Q180 250 300 238 L300 262 Q180 276 60 262Z" fill="#6D3FD6" opacity=".35"/>
+    <ellipse cx="222" cy="205" rx="26" ry="14" fill="#F5A524"/>
+    <ellipse cx="222" cy="205" rx="15" ry="7" fill="#FFC861" opacity=".8"/>
+  </g>
+  <path d="M300 138 C 350 98, 270 80, 180 124" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="10" stroke-linecap="round"/>
+</svg>

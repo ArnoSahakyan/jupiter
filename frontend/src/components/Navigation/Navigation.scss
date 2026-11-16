@@ -19,7 +19,7 @@
   }
 
   &__logo {
-    width: 95px;
+    width: 120px;
     height: 34px;
 
     img {
@@ -64,7 +64,7 @@
       position: absolute;
       top: 57px;
       background-color: $white;
-      border-top: 2px solid $blue;
+      border-top: 2px solid $primary;
       box-shadow: 4px 7px 20px 0 rgba(0, 0, 0, .09);
       transition: all .2s linear 0s;
       border-radius: 0 0 5px 5px;
@@ -81,7 +81,7 @@
           &:hover {
             background-color: $grey-bg;
             padding-left: 20px;
-            color: $blue;
+            color: $primary;
           }
         }
 
@@ -126,7 +126,7 @@
       background-color: $white;
       width: 150px;
       display: none;
-      border: 0.5px solid $blue;
+      border: 0.5px solid $primary;
       border-top: none;
       border-radius: 0 0 5px 5px;
       overflow: hidden;
@@ -164,10 +164,10 @@
 
         &:hover {
           background-color: $grey-bg;
-          color: $blue;
+          color: $primary;
 
           a {
-            color: $blue;
+            color: $primary;
           }
         }
 

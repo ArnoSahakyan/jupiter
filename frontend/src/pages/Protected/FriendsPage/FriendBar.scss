@@ -25,7 +25,7 @@
 
     span {
       font-size: 13px;
-      color: $blue;
+      color: $primary;
     }
 
     img {
@@ -65,10 +65,10 @@
       }
 
       &.confirm {
-        background-color: $blue;
+        background-color: $primary;
 
         &:disabled {
-          background-color: $blue-disabled;
+          background-color: $primary-disabled;
           opacity: 0.5;
           cursor: unset;
         }
@@ -104,10 +104,10 @@
         }
 
         &.span-confirm {
-          background-color: $blue;
+          background-color: $primary;
 
           &.disabled {
-            background-color: $blue-disabled;
+            background-color: $primary-disabled;
             pointer-events: none;
             opacity: 0.5;
           }

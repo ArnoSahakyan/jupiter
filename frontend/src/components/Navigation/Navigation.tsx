@@ -106,7 +106,7 @@ export default function Navigation() {
       <div className='Navigation'>
         <div>
           <div className="Navigation__logo">
-            <Link to={ROUTES.NEWSFEED}><img src="/logo.png" alt="Logo" /></Link>
+            <Link to={ROUTES.NEWSFEED}><img src="/logo.svg" alt="Jupiter" /></Link>
           </div>
           <ul className='Navigation__menu'>
             {dropDownMenu.map((menuItem) => (

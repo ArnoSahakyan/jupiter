@@ -65,7 +65,7 @@
 
         .editpfp {
           padding: 10px;
-          background-color: $blue;
+          background-color: $primary;
           color: $white;
           border-radius: 20px;
           cursor: pointer;
@@ -96,7 +96,7 @@
         transition: 200ms;
 
         &:hover {
-          border: 1px solid $blue;
+          border: 1px solid $primary;
           background-color: transparent;
         }
       }
@@ -113,7 +113,7 @@
       }
 
       .addfriend {
-        background-color: $blue;
+        background-color: $primary;
         color: $white;
         outline: none;
         border: none;
@@ -121,13 +121,13 @@
         padding: 4px 20px;
         cursor: pointer;
         border-radius: 2px;
-        border: 1px solid $blue;
+        border: 1px solid $primary;
         transition: 200ms;
 
         &:hover {
           background-color: transparent;
-          color: $blue;
-          border: 1px solid $blue;
+          color: $primary;
+          border: 1px solid $primary;
         }
 
       }

@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import ROUTES from '../../../routes/routes';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { object, string } from 'yup';
-import { ToastContainer } from 'react-toastify';
 import './SignUp.scss';
 import useAuth from '../../../hooks/useAuth';
 
@@ -43,23 +42,10 @@ export default function SignUp() {
   return (
     <div className='SignUp'>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-
       <div className="SignUp__info">
-        <h2>Winku</h2>
-        <p>Winku is free to use for as long as you want with two active projects.</p>
-        <img src="/wink.png" alt='winku' />
+        <h2>Jupiter</h2>
+        <p>Jupiter brings your campus into one orbit. Share posts and photos, find friends and chat in real time.</p>
+        <img src="/jupiter.svg" alt='Jupiter planet' />
       </div>
       <div className="SignUp__content">
         <h2>Sign Up</h2>

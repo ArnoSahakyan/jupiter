@@ -9,7 +9,7 @@
   position: relative;
 
   &::before {
-    background: rgba(0, 0, 0, 0) linear-gradient(to right, #ffffff 0%, #2fa7cd 50%, #ffffff 100%) repeat scroll 0 0;
+    background: rgba(0, 0, 0, 0) linear-gradient(to right, #ffffff 0%, $primary 50%, #ffffff 100%) repeat scroll 0 0;
     content: "";
     height: 5px;
     position: absolute;
@@ -36,7 +36,7 @@
     }
 
     img {
-      width: 95px;
+      width: 120px;
       height: 34px;
     }
   }
@@ -102,9 +102,9 @@
       font-weight: 400;
 
       &:hover {
-        background-color: $blue;
+        background-color: $primary;
         color: $white;
-        border: 1px solid $blue;
+        border: 1px solid $primary;
       }
     }
   }

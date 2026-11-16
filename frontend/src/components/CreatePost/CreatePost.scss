@@ -69,14 +69,14 @@
 
         button {
           padding: 5px 15px;
-          background-color: $blue;
+          background-color: $primary;
           color: $white;
           border: none;
           border-radius: 5px;
           cursor: pointer;
 
           &:disabled {
-            background-color: $blue-disabled;
+            background-color: $primary-disabled;
             cursor: not-allowed;
           }
         }

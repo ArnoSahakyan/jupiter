@@ -33,7 +33,7 @@
       .editpfp {
         width: 80%;
         padding: 5px;
-        background-color: $blue;
+        background-color: $primary;
         color: $white;
         border-radius: 10px;
         text-align: center;
@@ -62,7 +62,7 @@
       gap: 5px;
 
       h3 {
-        color: $blue;
+        color: $primary;
         font-size: 20px;
         font-weight: 700;
       }
@@ -82,7 +82,7 @@
       font-size: 14px;
 
       &.active {
-        color: $blue;
+        color: $primary;
       }
 
     }

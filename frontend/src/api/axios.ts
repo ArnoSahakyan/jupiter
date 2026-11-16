@@ -38,7 +38,7 @@ api.interceptors.response.use(
           )
         );
         store.dispatch(setAccessToken(newAccessToken.data.accessToken));
-        prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        prevRequest.headers["Authorization"] = `Bearer ${newAccessToken.data.accessToken}`;
         return api(prevRequest);
       } catch (error) {
         await performLogout()

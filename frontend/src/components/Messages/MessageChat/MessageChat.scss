@@ -12,7 +12,7 @@
     margin-left: auto;
 
     p {
-      background-color: $chat-blue;
+      background-color: $chat-sent;
     }
   }
 
@@ -27,7 +27,7 @@
   p {
     max-width: 90%;
     padding: 5px 10px;
-    background-color: $chat-green;
+    background-color: $chat-received;
   }
 }
 

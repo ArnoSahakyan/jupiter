@@ -18,7 +18,7 @@ const Layout = () => {
 
   useEffect(() => {
     error && notifyError(error)
-    postError && notifyError(postErrors)
+    postErrors && notifyError(postErrors)
     friendErrors && notifyError(friendErrors)
   }, [error, postErrors, friendErrors])
 
