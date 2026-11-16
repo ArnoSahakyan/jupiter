@@ -1,37 +1,87 @@
 @use '@assets/webColors' as *;
 
 .MessageInput {
-  padding: 15px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid $grey-bg;
+  background-color: $white;
 
-  form {
+  &__field {
     position: relative;
-    display: flex;
-    align-items: center;
+    flex: 1;
 
     textarea {
+      display: block;
       width: 100%;
+      max-height: 120px;
+      padding: 10px 16px;
+      border: 1px solid transparent;
+      border-radius: 20px;
+      background-color: $grey-bg;
+      font-family: inherit;
+      font-size: 14.5px;
+      line-height: 1.4;
+      color: $black;
       resize: none;
-      height: 70px;
-      padding: 10px;
-      font-family: 'Roboto';
+      outline: none;
+      transition: border-color 150ms, background-color 150ms;
+
+      &::placeholder {
+        color: $grey1;
+      }
+
+      &:focus {
+        border-color: $primary;
+        background-color: $white;
+      }
     }
 
-    button {
-      cursor: pointer;
+    .count {
       position: absolute;
-      right: -20px;
-      width: 40px;
-      height: 40px;
-      font-family: "Bootstrap-icons";
-      font-size: 20px;
-      background-color: $primary;
-      color: $white;
-      border: none;
-      outline: none;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      right: 14px;
+      bottom: -16px;
+      font-size: 11px;
+      color: $grey1;
+
+      &.full {
+        color: #c0392b;
+      }
     }
+  }
+
+  button {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background-color: $primary;
+    color: $white;
+    cursor: pointer;
+    transition: background-color 150ms, opacity 150ms;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .MessageInput {
+    padding: 10px;
   }
 }

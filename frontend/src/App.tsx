@@ -40,10 +40,11 @@ export const App = () => {
             <Route path={ROUTES.HOME} element={<LazyFeed />} />
             <Route path={ROUTES.PHOTOS} element={<LazyPhotos />} />
             <Route path={ROUTES.FRIENDS} element={<LazyFriendsPage />} />
-            <Route path={ROUTES.MESSAGES} element={<LazyMessages />} />
           </Route>
 
           <Route path={ROUTES.NEWSFEED} element={<Suspense fallback={<Loader />}> <LazyNewsFeed /> </Suspense>} />
+
+          <Route path={'/' + ROUTES.MESSAGES} element={<Suspense fallback={<Loader />}> <LazyMessages /> </Suspense>} />
 
           <Route path={ROUTES.USER} element={<Suspense fallback={<Loader />}> <LazyUserProfile /> </Suspense>}>
             <Route index element={<LazyProfileFeed />} />

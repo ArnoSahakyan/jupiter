@@ -1,126 +1,194 @@
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { getFriendsBack, getMessagesLoading, receiveMessage } from '../../../store/features/friends/friendsSlice'
-import Friend from '../../FriendsBar/Friend/Friend'
-import { useEffect, useState, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import io, { Socket } from 'socket.io-client'
+import { TFriendBack, getFriendsBack, getFriendsLoading, getMessagesLoading, receiveMessage } from '../../../store/features/friends/friendsSlice'
+import { getFriendsApi, getMessages } from '../../../store/features/friends/friendThunks'
+import { getAccessToken, getUserID } from '../../../store/features/userInfo/userInfoSlice'
+import { AppDispatch } from '../../../store/setup'
+import { SOCKET_URL } from '../../../api/config'
+import { profilePath } from '../../../routes/routes'
+import { formatMessageTime } from '../../../hooks/dateFormat'
+import SecondaryLoader from '../../shared/SecondaryLoader/SecondaryLoader'
 import MessageChat from '../MessageChat/MessageChat'
 import MessageInput from '../MessageInput/MessageInput'
-import { getMessages } from '../../../store/features/friends/friendThunks'
-import { getAccessToken } from '../../../store/features/userInfo/userInfoSlice'
-import io, { Socket } from 'socket.io-client';
-import { AppDispatch } from '../../../store/setup'
-import SecondaryLoader from '../../shared/SecondaryLoader/SecondaryLoader'
 import './MessagesContent.scss'
-import { SOCKET_URL } from '../../../api/config';
+
+const STATUS_LABEL: Record<string, string> = { online: 'Online', away: 'Away', offline: 'Offline' }
+
+// "Today", "Yesterday" or "Nov 14" (with the year if it's not this year).
+const dayLabel = (value?: string) => {
+  if (!value) return ''
+  const date = new Date(value)
+  const today = new Date()
+  const yesterday = new Date(); yesterday.setDate(today.getDate() - 1)
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  return new Intl.DateTimeFormat('en-US', date.getFullYear() === today.getFullYear()
+    ? { weekday: 'short', month: 'short', day: 'numeric' }
+    : { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+}
 
 export default function MessagesContent() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>()
   const friends = useSelector(getFriendsBack)
-  const [selectedFriendIndex, setSelectedFriendIndex] = useState<number>(0);
-  const chatRef = useRef<HTMLDivElement>(null);
+  const friendsLoading = useSelector(getFriendsLoading)
   const messageLoading = useSelector(getMessagesLoading)
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const token = useSelector(getAccessToken);
+  const userId = useSelector(getUserID)
+  const token = useSelector(getAccessToken)
+  const location = useLocation()
+  const [socket, setSocket] = useState<Socket | null>(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
+  // phones show either the list or the open chat
+  const [mobileChatOpen, setMobileChatOpen] = useState(false)
+  const chatRef = useRef<HTMLDivElement>(null)
+  const requestedFriendId = (location.state as { friendId?: number } | null)?.friendId
 
-  const initialLoad = useRef(true);
+  // Friends (with their online status) may not be loaded yet on this page.
+  useEffect(() => {
+    dispatch(getFriendsApi())
+  }, [dispatch])
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io(SOCKET_URL, {
-      auth: {
-        token,
-      },
-    });
-
-    // Handle received messages
-    newSocket.on('receive_message', (data) => {
-      dispatch(receiveMessage(data))
-    });
-
-    setSocket(newSocket);
-
-    // Clean up on unmount
+    const newSocket = io(SOCKET_URL, { auth: { token } })
+    newSocket.on('receive_message', (data) => dispatch(receiveMessage(data)))
+    setSocket(newSocket)
     return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    };
-  }, [dispatch, token]);
-
-  // Opened from a profile's "Message" button: start on that friend's chat.
-  const requestedFriendId = (useLocation().state as { friendId?: number } | null)?.friendId;
-  const requestedIndex = friends.findIndex(friend => friend.id === requestedFriendId);
-  const startIndex = requestedIndex >= 0 ? requestedIndex : 0;
-  const startFriendId = friends[startIndex]?.id;
-  const selectedFriendshipId = friends[selectedFriendIndex]?.friendshipId;
-
-  // Load the first chat's history once friends are available.
-  useEffect(() => {
-    if (initialLoad.current && startFriendId !== undefined) {
-      setSelectedFriendIndex(startIndex);
-      dispatch(getMessages(startFriendId));
-      initialLoad.current = false;
+      newSocket.disconnect()
     }
-  }, [dispatch, startFriendId, startIndex]);
+  }, [dispatch, token])
 
-  // (Re)join the selected chat's room whenever the chat or the socket changes.
-  useEffect(() => {
-    if (socket && selectedFriendshipId !== undefined) {
-      socket.emit('join_room', selectedFriendshipId);
-    }
-  }, [socket, selectedFriendshipId]);
+  const selected = friends.find(friend => friend.id === selectedId)
 
-  const selectFriend = (index: number) => {
-    dispatch(getMessages(friends[index].id))
-    setSelectedFriendIndex(index);
+  const openChat = (friend: TFriendBack) => {
+    setSelectedId(friend.id)
+    setMobileChatOpen(true)
+    dispatch(getMessages(friend.id))
   }
 
+  // Start on the friend you came from ("Message" on a profile), else the first one.
   useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  }, [friends, selectedFriendIndex]);
+    if (selectedId !== null || friends.length === 0) return
+    const start = friends.find(friend => friend.id === requestedFriendId) ?? friends[0]
+    setSelectedId(start.id)
+    setMobileChatOpen(requestedFriendId !== undefined)
+    dispatch(getMessages(start.id))
+  }, [friends, selectedId, requestedFriendId, dispatch])
+
+  // Join the open chat's room (again after the socket reconnects).
+  useEffect(() => {
+    if (socket && selected) socket.emit('join_room', selected.friendshipId)
+  }, [socket, selected?.friendshipId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const messages = useMemo(() => selected?.messages ?? [], [selected])
+
+  // Keep the newest message in view.
+  useEffect(() => {
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
+  }, [messages.length, selectedId, messageLoading])
+
+  const shownFriends = friends.filter(friend =>
+    `${friend.fname} ${friend.username}`.toLowerCase().includes(search.trim().toLowerCase()))
+
+  if (!friendsLoading && friends.length === 0) {
+    return (
+      <div className='MessagesContent MessagesContent--empty'>
+        <h2>No conversations yet</h2>
+        <p>Add friends to start chatting with them here.</p>
+        <Link to='/friends'>Find people</Link>
+      </div>
+    )
+  }
 
   return (
-    <div className={`${friends && friends.length === 0 ? "MessagesContent-nomessages" : ''} MessagesContent`}>
-      {
-        friends && friends.length === 0
-          ? <p className='no-users'>add friends and have a chat!</p>
-          : <><div className="MessagesContent__friends">
-            {
-              friends.map((friend, index) => {
-                return <div key={friend.id} className="friend" onClick={() => selectFriend(index)}>
-                  <Friend user={friends[index]} onlyImg={false} />
-                </div>
-              })
-            }
-          </div>
-            <div className="MessagesContent__box">
-              <div className="content">
-                <img src={friends[selectedFriendIndex]?.pfp} alt={friends[selectedFriendIndex]?.fname} />
-                <div className="content-info">
-                  <h4>{friends[selectedFriendIndex]?.fname}</h4>
-                  <span>{friends[selectedFriendIndex]?.onlineStatus}</span>
-                </div>
-              </div>
+    <div className={`MessagesContent ${mobileChatOpen ? 'chat-open' : ''}`}>
+      <aside className='MessagesContent__list' aria-label='Conversations'>
+        <div className='MessagesContent__list-header'>
+          <h1>Messages</h1>
+          <input
+            type='search'
+            placeholder='Search friends'
+            aria-label='Search friends'
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        <ul>
+          {shownFriends.map(friend => (
+            <li key={friend.id}>
+              <button
+                type='button'
+                className={friend.id === selectedId ? 'active' : ''}
+                aria-current={friend.id === selectedId}
+                onClick={() => openChat(friend)}
+              >
+                <span className={`avatar ${friend.onlineStatus}`}><img src={friend.pfp} alt='' /></span>
+                <span className='text'>
+                  <strong>{friend.fname}</strong>
+                  <span>{STATUS_LABEL[friend.onlineStatus] ?? friend.onlineStatus}</span>
+                </span>
+              </button>
+            </li>
+          ))}
+          {shownFriends.length === 0 && <li className='none'>No friends match “{search}”</li>}
+        </ul>
+      </aside>
 
-              <div className={`${messageLoading || friends[selectedFriendIndex]?.messages?.length === 0 ? "chat-loading" : ""} chat`} ref={chatRef}>
-                {
-                  (messageLoading && <SecondaryLoader />)
-                  ||
-                  (
-                    friends[selectedFriendIndex]?.messages?.length === 0
-                      ? <p className='no-users'>there are no messages here yet</p>
-                      : friends[selectedFriendIndex]?.messages.map(message => {
-                        return <MessageChat key={message.messageId} content={message} user={friends[selectedFriendIndex]} />
-                      })
-                  )
-                }
-              </div>
+      <section className='MessagesContent__chat' aria-label={selected ? `Chat with ${selected.fname}` : 'Chat'}>
+        {selected ? (
+          <>
+            <header className='MessagesContent__chat-header'>
+              <button type='button' className='back' aria-label='Back to conversations' onClick={() => setMobileChatOpen(false)}>
+                <svg viewBox='0 0 16 16' width='18' height='18' fill='currentColor' aria-hidden='true'>
+                  <path fillRule='evenodd' d='M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8' />
+                </svg>
+              </button>
+              <Link to={profilePath(selected.id, userId)} className='profile-link who'>
+                <span className={`avatar ${selected.onlineStatus}`}><img src={selected.pfp} alt='' /></span>
+                <span className='text'>
+                  <strong>{selected.fname}</strong>
+                  <span>{STATUS_LABEL[selected.onlineStatus] ?? selected.onlineStatus}</span>
+                </span>
+              </Link>
+            </header>
 
-              <MessageInput friend={friends[selectedFriendIndex]} socket={socket} />
-            </div></>
-      }
+            <div className='MessagesContent__messages' ref={chatRef} aria-live='polite'>
+              {messageLoading && messages.length === 0 ? (
+                <div className='center'><SecondaryLoader /></div>
+              ) : messages.length === 0 ? (
+                <div className='center hello'>
+                  <img src={selected.pfp} alt='' />
+                  <strong>Say hi to {selected.fname.split(' ')[0]}</strong>
+                  <span>Messages you send appear here.</span>
+                </div>
+              ) : messages.map((message, index) => {
+                const previous = messages[index - 1]
+                const next = messages[index + 1]
+                const day = dayLabel(message.createdAt)
+                const newDay = !previous || dayLabel(previous.createdAt) !== day
+                const lastInGroup = !next || next.senderId !== message.senderId || dayLabel(next.createdAt) !== day
+                return (
+                  <Fragment key={message.messageId}>
+                    {newDay && day && <div className='day'><span>{day}</span></div>}
+                    <MessageChat
+                      content={message}
+                      user={selected}
+                      own={message.senderId == userId}
+                      lastInGroup={lastInGroup}
+                      time={message.createdAt ? formatMessageTime(message.createdAt) : undefined}
+                    />
+                  </Fragment>
+                )
+              })}
+            </div>
+
+            <MessageInput friend={selected} socket={socket} />
+          </>
+        ) : (
+          <div className='center'><SecondaryLoader /></div>
+        )}
+      </section>
     </div>
   )
 }

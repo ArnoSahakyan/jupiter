@@ -1,33 +1,26 @@
-import { useSelector } from 'react-redux';
 import { TFriendBack, TMessages } from '../../../store/features/friends/friendsSlice'
 import './MessageChat.scss'
-import { getPfp, getUserID } from '../../../store/features/userInfo/userInfoSlice';
-import { formatMessageTime } from '../../../hooks/dateFormat';
 
 interface IMessageChat {
   content: TMessages;
   user: TFriendBack;
+  own: boolean;
+  lastInGroup: boolean; // last of several messages in a row from the same person
+  time?: string;
 }
 
-export default function MessageChat({ content, user }: IMessageChat) {
-  const userId = useSelector(getUserID)
-  const pfp = useSelector(getPfp)
-  const time = content.createdAt && (
-    <time className='time' dateTime={content.createdAt}>{formatMessageTime(content.createdAt)}</time>
-  )
+// One chat bubble. Your messages sit on the right in violet; the friend's
+// photo is shown next to the last message of each run of theirs.
+export default function MessageChat({ content, user, own, lastInGroup, time }: IMessageChat) {
   return (
-    <>
-      {
-        content.senderId != userId ?
-          <div className='MessageChat friend'>
-            <img src={user.pfp} alt={user.fname} />
-            <p>{content.message}{time}</p>
-          </div>
-          : <div className='MessageChat user'>
-            <p>{content.message}{time}</p>
-            <img src={pfp} alt='profile picture' />
-          </div>
-      }
-    </>
+    <div className={`MessageChat ${own ? 'own' : 'theirs'} ${lastInGroup ? 'last' : ''}`}>
+      {!own && (
+        <span className='MessageChat__avatar'>{lastInGroup && <img src={user.pfp} alt='' />}</span>
+      )}
+      <div className='MessageChat__bubble'>
+        <p>{content.message}</p>
+        {lastInGroup && time && <time dateTime={content.createdAt}>{time}</time>}
+      </div>
+    </div>
   )
 }

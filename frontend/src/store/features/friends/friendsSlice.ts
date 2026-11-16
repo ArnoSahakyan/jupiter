@@ -100,7 +100,9 @@ const friendsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFriendsApi.fulfilled, (state, { payload }) => {
-        state.friendsBack = [...payload];
+        // keep chat history already loaded for each friend; refresh the rest
+        const loaded = new Map(state.friendsBack.map(friend => [friend.id, friend.messages]));
+        state.friendsBack = payload.map((friend: TFriendBack) => ({ ...friend, messages: loaded.get(friend.id) ?? friend.messages }));
         state.loading = false;
       })
       .addCase(getFriendsApi.pending, (state) => {

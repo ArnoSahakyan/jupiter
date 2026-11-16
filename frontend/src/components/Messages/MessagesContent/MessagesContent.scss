@@ -2,109 +2,330 @@
 
 .MessagesContent {
   display: grid;
-  grid-template-columns: 1fr 4fr;
-  height: 450px;
+  grid-template-columns: 320px minmax(0, 1fr);
+  max-width: 1100px;
+  height: calc(100vh - 105px); // fills the screen below the navbar
+  min-height: 460px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: $white;
+  box-shadow: 0 1px 2px rgba(23, 12, 48, 0.06);
 
-  .no-users {
-    color: $primary;
-    font-weight: 500;
-    text-transform: capitalize;
+  // photo with a status dot (list and chat header)
+  .avatar {
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      display: block;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid $white;
+      background-color: $offline;
+    }
+
+    &.online::after { background-color: $online; }
+    &.away::after { background-color: $away; }
   }
 
-  &-nomessages {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 120px;
-  }
-
-  &__friends {
-    outline: 2px solid $grey-bg;
-    padding-left: 10px;
+  .text {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    min-width: 0;
+    text-align: left;
 
-    .Friend {
+    strong {
+      font-size: 15px;
+      font-weight: 600;
+      color: $black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      font-size: 13px;
+      color: $grey1;
+    }
+  }
+
+  .center {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 6px;
+    text-align: center;
+  }
+
+  // ---------- conversation list ----------
+  &__list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-right: 1px solid $grey-bg;
+
+    ul {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 8px;
+    }
+
+    li.none {
+      padding: 16px;
+      font-size: 14px;
+      color: $grey1;
+      text-align: center;
+    }
+
+    button {
       width: 100%;
-      padding: 10px 0;
-      border-bottom: 1px solid $grey-bg;
-      border-right: 1px solid $grey-bg;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 150ms;
 
-      &__content {
-        p {
-          display: none;
+      &:hover {
+        background-color: $grey-bg;
+      }
+
+      &.active {
+        background-color: rgba(109, 63, 214, 0.1);
+
+        .text strong {
+          color: $primary;
         }
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: -2px;
       }
     }
   }
 
-  &__box {
+  &__list-header {
+    padding: 18px 16px 12px;
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: $black;
+    }
+
+    input {
+      width: 100%;
+      padding: 9px 14px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background-color: $grey-bg;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+
+      &:focus {
+        border-color: $primary;
+        background-color: $white;
+      }
+    }
+  }
+
+  // ---------- chat ----------
+  &__chat {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    min-height: 0;
+  }
 
-    .content {
+  &__chat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-bottom: 1px solid $grey-bg;
+
+    .back {
+      display: none;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: $dark-grey;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $grey-bg;
+      }
+    }
+
+    .who {
       display: flex;
-      border-bottom: 1px solid $grey-bg;
-      margin-left: 15px;
-      padding: 15px 0;
-      gap: 20px;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      padding: 4px 8px 4px 4px;
+      border-radius: 12px;
 
+      &:hover {
+        background-color: $grey-bg;
+      }
+
+      .avatar img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+
+  &__messages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 16px 18px;
+    overflow-y: auto;
+    background-color: #faf9fd;
+
+    .day {
+      display: flex;
+      justify-content: center;
+      margin: 14px 0 10px;
+
+      span {
+        padding: 3px 10px;
+        border-radius: 999px;
+        background-color: $grey-bg;
+        font-size: 12px;
+        font-weight: 500;
+        color: $grey1;
+      }
+    }
+
+    .hello {
       img {
-        width: 45px;
-        height: 45px;
+        width: 72px;
+        height: 72px;
+        margin-bottom: 6px;
         border-radius: 50%;
         object-fit: cover;
         object-position: top;
       }
 
-      &-info {
+      strong {
+        font-size: 17px;
+        color: $black;
+      }
 
-        h4 {
-          color: $dark-grey;
-          font-size: 18px;
-          font-weight: 500;
-        }
-
-        span {
-          color: $grey1;
-          font-style: italic;
-          font-size: 13px;
-        }
+      span {
+        font-size: 14px;
+        color: $grey1;
       }
     }
+  }
 
-    .chat {
-      height: 250px;
-      overflow-y: auto;
+  // ---------- no friends yet ----------
+  &--empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: auto;
+    min-height: 0;
+    padding: 56px 24px;
+    text-align: center;
 
-      &-loading {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    h2 {
+      font-size: 18px;
+      color: $black;
+    }
 
+    p {
+      font-size: 14px;
+      color: $grey1;
+    }
+
+    a {
+      margin-top: 10px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      background-color: $primary;
+      font-size: 14px;
+      font-weight: 600;
+      color: $white;
     }
   }
 }
 
+@media screen and (max-width: 1023px) {
+  .MessagesContent {
+    grid-template-columns: 260px minmax(0, 1fr);
+    height: calc(100vh - 97px);
+  }
+}
 
+// Phones: the list, or the open chat with a back button.
 @media screen and (max-width: 767px) {
   .MessagesContent {
-    height: unset;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: block;
+    height: calc(100dvh - 140px); // below the mobile header and search bar
+    min-height: 420px;
 
-    &__box {
-      .chat {
-        height: 500px;
+    &__list,
+    &__chat {
+      height: 100%;
+    }
+
+    &__list {
+      border-right: none;
+    }
+
+    &__chat {
+      display: none;
+    }
+
+    &.chat-open {
+      .MessagesContent__list { display: none; }
+      .MessagesContent__chat { display: flex; }
+    }
+
+    &__chat-header {
+      padding: 8px 10px;
+
+      .back {
+        display: grid;
       }
     }
 
-    &__friends {
-      max-height: 130px;
+    &__messages {
+      padding: 12px;
+    }
+
+    &--empty {
+      height: auto;
     }
   }
 }
