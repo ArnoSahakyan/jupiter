@@ -68,7 +68,9 @@
 }
 
 
-@media screen and (max-width: 767px) {
+// Hidden on phones and tablets: they repeat the Shortcuts links and the
+// Friends list, and the space is needed for the content.
+@media screen and (max-width: 1023px) {
   .LeftSidebar {
     display: none;
   }
