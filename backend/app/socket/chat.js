@@ -3,7 +3,7 @@
 // socket may join and where a message goes, so nobody can listen to or post
 // into a chat they are not part of.
 
-const MAX_MESSAGE_LENGTH = 2000;
+const { cleanMessage, findFriendshipBetween } = require('../helpers/messages');
 
 const roomName = (friendshipId) => `chat:${friendshipId}`;
 
@@ -16,17 +16,6 @@ module.exports = function registerChatHandlers(io, db) {
       where: {
         friendshipId,
         [Op.or]: [{ userId }, { friendId: userId }]
-      }
-    });
-
-  // Friendship row between these two users, in either direction.
-  const findFriendshipBetween = (userId, otherId) =>
-    db.friend.findOne({
-      where: {
-        [Op.or]: [
-          { userId, friendId: otherId },
-          { userId: otherId, friendId: userId }
-        ]
       }
     });
 
@@ -50,10 +39,10 @@ module.exports = function registerChatHandlers(io, db) {
     socket.on('send_message', async (data) => {
       try {
         const receiverId = Number(data?.receiverId);
-        const message = typeof data?.message === 'string' ? data.message.trim() : '';
-        if (!Number.isInteger(receiverId) || !message || message.length > MAX_MESSAGE_LENGTH) return;
+        const message = cleanMessage(data?.message);
+        if (!Number.isInteger(receiverId) || !message) return;
 
-        const friendship = await findFriendshipBetween(userId, receiverId);
+        const friendship = await findFriendshipBetween(db, userId, receiverId);
         if (!friendship) return; // can only message friends
 
         await db.message.create({ senderId: userId, receiverId, message });

@@ -1,15 +1,29 @@
 const db = require("../models");
+const { MAX_MESSAGE_LENGTH, cleanMessage, findFriendshipBetween } = require("../helpers/messages");
 
 exports.saveMessage = async (req, res) => {
   const senderId = req.userId;
-  const { receiverId, message, roomId } = req.body;
+  const receiverId = Number(req.body.receiverId);
+  const message = cleanMessage(req.body.message);
+
+  if (!Number.isInteger(receiverId)) {
+    return res.status(400).json({ error: 'A valid receiverId is required' });
+  }
+
+  if (!message) {
+    return res.status(400).json({ error: `Message must be 1-${MAX_MESSAGE_LENGTH} characters` });
+  }
 
   try {
+    const friendship = await findFriendshipBetween(db, senderId, receiverId);
+    if (!friendship) {
+      return res.status(403).json({ error: 'You can only message your friends' });
+    }
+
     const newMessage = await db.message.create({
       senderId,
       receiverId,
-      message,
-      roomId
+      message
     });
 
     res.status(201).json(newMessage);
