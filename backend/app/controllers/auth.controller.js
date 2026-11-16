@@ -8,13 +8,6 @@ const Role = db.role;
 
 const Op = db.Sequelize.Op;
 
-// Cost 12: about a quarter second per hash. Older cost-8 hashes still verify.
-const BCRYPT_ROUNDS = 12;
-// Compared against when the username doesn't exist, so a wrong username takes
-// as long as a wrong password and response times don't reveal valid usernames.
-const DUMMY_HASH = bcrypt.hashSync('dummy-password-for-timing', BCRYPT_ROUNDS);
-const INVALID_LOGIN = "Invalid username or password";
-
 const generateAccessToken = (user) => {
   const accessToken = jwt.sign({ id: user.id },
     process.env.ACCESS_TOKEN_SECRET,
@@ -46,7 +39,7 @@ exports.signup = async (req, res) => {
         fname: req.body.fname,
         username: req.body.username.toLowerCase(),
         email: req.body.email.toLowerCase(),
-        password: await bcrypt.hash(req.body.password, BCRYPT_ROUNDS),
+        password: bcrypt.hashSync(req.body.password, 8),
         // Set explicitly: older databases still have "TV Model" as the column default.
         job: null
       }, { transaction });
@@ -62,43 +55,56 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signin = async (req, res) => {
-  try {
-    const user = await User.findOne({
-      where: {
-        username: req.body.username.toLowerCase()
-      }
-    });
-
-    // Same message and same bcrypt work whether the username or the password
-    // is wrong, so the response doesn't reveal which usernames exist.
-    const passwordIsValid = await bcrypt.compare(req.body.password, user ? user.password : DUMMY_HASH);
-    if (!user || !passwordIsValid) {
-      return res.status(401).send({ accessToken: null, message: INVALID_LOGIN });
+exports.signin = (req, res) => {
+  User.findOne({
+    where: {
+      username: (req.body.username || '').toLowerCase()
     }
+  })
+    .then(user => {
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
 
-    const accessToken = generateAccessToken(user)
-    const refreshToken = generateRefreshToken(user)
+      const passwordIsValid = bcrypt.compareSync(
+        req.body.password,
+        user.password
+      );
 
-    const roles = await user.getRoles();
-    const authorities = roles.map(role => "ROLE_" + role.name.toUpperCase());
+      if (!passwordIsValid) {
+        return res.status(401).send({
+          accessToken: null,
+          message: "Invalid Password!"
+        });
+      }
 
-    res.status(200).send({
-      id: user.id,
-      fname: user.fname,
-      username: user.username,
-      email: user.email,
-      pfp: user.pfp,
-      coverPhoto: user.coverPhoto,
-      job: user.job,
-      onlineStatus: user.onlineStatus,
-      accessToken,
-      refreshToken,
-      roles: authorities,
+      const accessToken = generateAccessToken(user)
+      const refreshToken = generateRefreshToken(user)
+
+      const authorities = [];
+      user.getRoles().then(roles => {
+        for (let i = 0; i < roles.length; i++) {
+          authorities.push("ROLE_" + roles[i].name.toUpperCase());
+        }
+
+        res.status(200).send({
+          id: user.id,
+          fname: user.fname,
+          username: user.username,
+          email: user.email,
+          pfp: user.pfp,
+          coverPhoto: user.coverPhoto,
+          job: user.job,
+          onlineStatus: user.onlineStatus,
+          accessToken,
+          refreshToken,
+          roles: authorities,
+        });
+      });
+    })
+    .catch(err => {
+      res.status(500).send({ message: err.message });
     });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
 };
 
 exports.refreshToken = (req, res) => {

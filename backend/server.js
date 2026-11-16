@@ -5,8 +5,6 @@ const path = require('path');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import socket.io
 const jwt = require("jsonwebtoken");
-const helmet = require("helmet");
-const cookieParser = require("cookie-parser");
 
 const corsOptions = {
   origin: process.env.CORS, // specify the origin
@@ -18,25 +16,14 @@ const corsOptions = {
 };
 
 const app = express();
-
-// Behind a hosting proxy (Render, Heroku, ...) the client IP comes from
-// X-Forwarded-For; without this every user shares the proxy's IP and the rate
-// limits would apply to everyone at once. Defaults to 1 proxy hop in production.
-const trustProxy = process.env.TRUST_PROXY ?? (process.env.NODE_ENV === 'production' ? '1' : 'false');
-app.set('trust proxy', /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy === 'true');
 const server = http.createServer(app); // Create an HTTP server
 const io = new Server(server, { // Initialize socket.io with the HTTP server
   cors: corsOptions
 });
 
 // Middleware and routes setup
-app.use(helmet({
-  // the frontend is on another origin and loads images from /upload
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
-}));
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '100kb' }));
-app.use(cookieParser());
+app.use(express.json());
 app.use('/upload', express.static(path.join(__dirname, 'app/upload')));
 app.use(express.urlencoded({ extended: true }));
 
