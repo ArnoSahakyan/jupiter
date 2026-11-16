@@ -36,17 +36,17 @@ export default function Feed() {
     }
   };
 
+  // Load the first page when this feed has nothing yet (totalPages === 0 means
+  // the server already told us it's empty, so don't ask again).
   useEffect(() => {
-    if (posts.data.length === 0) {
+    if (posts.data.length === 0 && posts.totalPages !== 0) {
       if (isNewsfeed) {
         dispatch(getNewsfeed({ limit, offset: posts.offset }))
       } else {
-        if (posts.totalPages !== 0) {
-          dispatch(getUserPosts({ limit, offset: posts.offset }))
-        }
+        dispatch(getUserPosts({ limit, offset: posts.offset }))
       }
     }
-  }, [dispatch, isNewsfeed, limit]);
+  }, [dispatch, isNewsfeed, limit, posts.data.length, posts.offset, posts.totalPages]);
 
   const handleReload = () => {
     callNewPosts(limit, posts.offset + limit);

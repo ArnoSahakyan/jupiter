@@ -41,22 +41,19 @@ export default function Photos() {
     }
   }
 
+  // Load the first page once on mount (photos live in local state, so they start empty).
   useEffect(() => {
-    if (pictures.length === 0) {
-      if (totalPages !== 0) {
-        setLoading(true);
-        dispatch(getUserPhotos({ limit, offset }))
-          .then(res => {
-            const payload = res.payload as Tpictures;
-            setTotalPages(payload.totalPages)
-            setPictures(payload.data)
-            setCurrentPage(payload.currentPage)
-            setOffset(payload.offset)
-          })
-          .catch(err => console.error(err))
-          .finally(() => setLoading(false))
-      }
-    }
+    setLoading(true);
+    dispatch(getUserPhotos({ limit, offset: 0 }))
+      .then(res => {
+        const payload = res.payload as Tpictures;
+        setTotalPages(payload.totalPages)
+        setPictures(payload.data)
+        setCurrentPage(payload.currentPage)
+        setOffset(payload.offset)
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false))
   }, [dispatch, limit]);
 
   const handleReload = () => {

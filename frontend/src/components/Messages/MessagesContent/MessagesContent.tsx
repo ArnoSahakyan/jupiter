@@ -46,23 +46,27 @@ export default function MessagesContent() {
     };
   }, [dispatch, token]);
 
+  const firstFriendId = friends[0]?.id;
+  const selectedFriendshipId = friends[selectedFriendIndex]?.friendshipId;
+
+  // Load the first chat's history once friends are available.
   useEffect(() => {
-    if (socket && friends.length > 0) {
-      if (initialLoad.current) {
-        selectFriend(0);
-        initialLoad.current = false;
-      } else {
-        socket.emit('join_room', friends[selectedFriendIndex]?.friendshipId);
-      }
+    if (initialLoad.current && firstFriendId !== undefined) {
+      dispatch(getMessages(firstFriendId));
+      initialLoad.current = false;
     }
-  }, [friends, selectedFriendIndex, socket]);
+  }, [dispatch, firstFriendId]);
+
+  // (Re)join the selected chat's room whenever the chat or the socket changes.
+  useEffect(() => {
+    if (socket && selectedFriendshipId !== undefined) {
+      socket.emit('join_room', selectedFriendshipId);
+    }
+  }, [socket, selectedFriendshipId]);
 
   const selectFriend = (index: number) => {
     dispatch(getMessages(friends[index].id))
     setSelectedFriendIndex(index);
-    if (socket) {
-      socket.emit('join_room', friends[index].friendshipId);
-    }
   }
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import './BurgerMenu.scss';
 import ROUTES from "../../routes/routes";
 import { Link } from "react-router-dom";
@@ -29,6 +29,12 @@ export default function BurgerMenu({ menuLinks }: { menuLinks: MenuItem[] }) {
     setIsMenuClicked(!isMenuClicked);
   };
 
+  const closeMenu = useCallback(() => {
+    setBurgerClass("burger-bar unclicked");
+    setMenuClass("menu hidden");
+    setIsMenuClicked(false);
+  }, []);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const menu = document.querySelector('.menu');
@@ -42,7 +48,7 @@ export default function BurgerMenu({ menuLinks }: { menuLinks: MenuItem[] }) {
         e.target !== menuIcon &&
         !Array.from(burgerBars).some(bar => bar.contains(e.target as Node))
       ) {
-        updateMenu();
+        closeMenu();
       }
     };
 
@@ -51,7 +57,7 @@ export default function BurgerMenu({ menuLinks }: { menuLinks: MenuItem[] }) {
     return () => {
       window.removeEventListener('click', handleClick);
     };
-  }, [isMenuClicked]);
+  }, [isMenuClicked, closeMenu]);
 
   return (
     <div className="BurgerMenu">
