@@ -41,6 +41,7 @@ const Layout = () => {
         position="top-right"
         autoClose={2500}
         hideProgressBar={false}
+        closeButton={false}
         newestOnTop={true}
         closeOnClick
         rtl={false}

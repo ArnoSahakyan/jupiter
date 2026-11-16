@@ -87,3 +87,27 @@ a {
   color: $dark-grey;
   font-weight: 400;
 }
+// Toasts (react-toastify) in the Jupiter style.
+:root {
+  --toastify-font-family: inherit;
+  --toastify-toast-bd-radius: 12px;
+  --toastify-toast-min-height: 56px;
+  --toastify-toast-top: 72px; // below the navbar
+  --toastify-color-progress-light: #{$primary};
+  --toastify-color-info: #{$primary};
+  --toastify-color-success: #2f9e44;
+  --toastify-color-error: #d6336c;
+  --toastify-color-warning: #{$accent};
+  --toastify-text-color-light: #{$black};
+}
+
+.Toastify__toast {
+  border: 1px solid $grey-bg;
+  box-shadow: 0 10px 30px rgba(23, 12, 48, 0.14);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Toastify__progress-bar {
+  height: 3px;
+}

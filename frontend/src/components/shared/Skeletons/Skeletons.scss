@@ -1,0 +1,77 @@
+@use '@assets/webColors' as *;
+
+// Shared shimmer for loading placeholders.
+.sk {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, $grey-bg 25%, #f6f4fa 50%, $grey-bg 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+
+  &.circle { border-radius: 50%; }
+}
+
+@keyframes sk-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk { animation: none; }
+}
+
+.PostSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background-color: $white;
+  box-shadow: 0 1px 2px rgba(23, 12, 48, 0.06);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__lines {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  &__image {
+    height: 260px;
+    border-radius: 10px;
+  }
+}
+
+.FriendSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid $grey-bg;
+  border-radius: 14px;
+  background-color: $white;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+}
+
+.CommentSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}

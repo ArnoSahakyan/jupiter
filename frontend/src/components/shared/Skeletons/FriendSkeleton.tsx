@@ -1,19 +1,14 @@
-import ContentLoader from "react-content-loader"
+import './Skeletons.scss'
 
-const FriendSkeleton = (props) => (
-  <ContentLoader
-    className="FriendSkeleton"
-    speed={1.5}
-    height={60}
-    backgroundColor="#f3f3f3"
-    foregroundColor="#ecebeb"
-    {...props}
-  >
-    <circle cx="35" cy="30" r="28" />
-    <rect x="80" y="14" rx="2" ry="2" width="140" height="10" />
-    <rect x="80" y="35" rx="2" ry="2" width="140" height="10" />
-  </ContentLoader>
-)
-
-export default FriendSkeleton
-
+// Placeholder shaped like a person card.
+export default function FriendSkeleton() {
+  return (
+    <div className='FriendSkeleton' aria-hidden='true'>
+      <span className='sk circle' style={{ width: 52, height: 52 }} />
+      <span>
+        <span className='sk' style={{ width: 130, height: 11 }} />
+        <span className='sk' style={{ width: 80, height: 9 }} />
+      </span>
+    </div>
+  )
+}

@@ -1,7 +1,5 @@
 import './SecondaryLoader.scss'
 
 export default function SecondaryLoader() {
-  return (
-    <span className="secondary-loader"></span>
-  )
+  return <span className='secondary-loader' role='status' aria-label='Loading' />
 }
