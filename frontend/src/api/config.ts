@@ -5,7 +5,8 @@
 // - VITE_SOCKET_URL: Socket.IO server (proxies like Vercel rewrites don't
 //   carry WebSockets, so this always points at the backend directly).
 // Both fall back to VITE_BACK_BASE_URL.
-const backend = import.meta.env.VITE_BACK_BASE_URL ?? '';
+// In development it defaults to the local backend, so no .env is needed.
+const backend = import.meta.env.VITE_BACK_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8080' : '');
 
 export const API_URL: string = import.meta.env.VITE_API_URL ?? backend;
 export const SOCKET_URL: string = import.meta.env.VITE_SOCKET_URL ?? backend;
