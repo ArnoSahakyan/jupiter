@@ -1,0 +1,374 @@
+@use '@assets/webColors' as *;
+
+// Matches the page content below it (HomePage section padding).
+$gutter: 87px;
+$gutter-tablet: 30px;
+$avatar: 148px;
+
+.ProfileHeader {
+  margin-top: 57px; // below the fixed navbar
+  background-color: $white;
+  box-shadow: 0 1px 0 rgba(23, 12, 48, 0.06);
+
+  &__cover {
+    position: relative;
+    height: clamp(200px, 26vw, 320px);
+    background-color: $primary-light;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    // soft fade so the cover meets the white header gently
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 40%;
+      background: linear-gradient(to bottom, transparent, rgba(23, 12, 48, 0.25));
+      pointer-events: none;
+    }
+  }
+
+  &__cover-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+
+  &__cover-button {
+    position: absolute;
+    right: $gutter;
+    bottom: 16px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 999px;
+    background-color: rgba(23, 12, 48, 0.55);
+    backdrop-filter: blur(4px);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: $white;
+    cursor: pointer;
+    transition: background-color 150ms;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(23, 12, 48, 0.75);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $white;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__body {
+    padding: 0 $gutter;
+  }
+
+  &__main {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    padding-bottom: 16px;
+  }
+
+  &__avatar {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: calc($avatar / -2);
+  }
+
+  &__photo {
+    display: grid;
+    place-items: center;
+    width: $avatar;
+    height: $avatar;
+    border-radius: 50%;
+    border: 5px solid $white;
+    background-color: $grey-bg;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(23, 12, 48, 0.15);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .secondary-loader {
+      scale: 0.6;
+    }
+  }
+
+  &__status {
+    position: absolute;
+    left: 16px;
+    bottom: 14px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid $white;
+    background-color: $offline;
+
+    &.online { background-color: $online; }
+    &.away { background-color: $away; }
+  }
+
+  &__photo-button {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 3px solid $white;
+    border-radius: 50%;
+    background-color: $primary;
+    color: $white;
+    cursor: pointer;
+    transition: background-color 150ms;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-dark;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 4px;
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: $black;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 4px;
+    font-size: 14px;
+    color: $grey1;
+
+    span + span::before {
+      content: '·';
+      margin-right: 12px;
+    }
+  }
+
+  &__stats {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $dark-grey;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+
+  &__tabs {
+    display: flex;
+    gap: 4px;
+    border-top: 1px solid $grey-bg;
+
+    a {
+      position: relative;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: $grey1;
+      transition: color 150ms;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: -1px;
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+        background-color: transparent;
+      }
+
+      &:hover {
+        color: $black;
+      }
+
+      &.active {
+        color: $primary;
+        font-weight: 600;
+
+        &::after {
+          background-color: $primary;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: -2px;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+// Buttons used in the header's actions
+.profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms;
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+
+  &.primary {
+    background-color: $primary;
+    color: $white;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-dark;
+    }
+  }
+
+  &.secondary {
+    border-color: #d9d4e6;
+    background-color: $white;
+    color: $dark-grey;
+
+    &:hover:not(:disabled) {
+      background-color: $grey-bg;
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .ProfileHeader {
+    &__body {
+      padding: 0 $gutter-tablet;
+    }
+
+    &__cover-button {
+      right: $gutter-tablet;
+    }
+  }
+}
+
+// Phones: everything stacks under a shorter cover.
+@media screen and (max-width: 767px) {
+  .ProfileHeader {
+    margin-top: 0; // the mobile header is part of the page flow
+
+    &__cover {
+      height: 170px;
+    }
+
+    &__cover-button {
+      right: 5%;
+      top: 12px;
+      bottom: auto;
+      padding: 8px 10px;
+
+      span {
+        display: none; // icon only on phones
+      }
+    }
+
+    &__body {
+      padding: 0 5%;
+    }
+
+    &__main {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    &__avatar {
+      margin-top: -56px;
+    }
+
+    &__photo {
+      width: 112px;
+      height: 112px;
+      border-width: 4px;
+    }
+
+    &__status {
+      left: 10px;
+      bottom: 8px;
+    }
+
+    &__photo-button {
+      right: 0;
+      bottom: 2px;
+      width: 32px;
+      height: 32px;
+    }
+
+    &__info h1 {
+      font-size: 22px;
+    }
+
+    &__actions {
+      width: 100%;
+
+      .profile-button {
+        flex: 1;
+      }
+    }
+
+    &__tabs a {
+      flex: 1;
+      text-align: center;
+    }
+  }
+}

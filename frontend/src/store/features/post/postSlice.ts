@@ -190,6 +190,7 @@ const postSlice = createSlice({
           image: payload.image ? payload.image : null,
         };
         state.userPosts.data.unshift(modifiedData)
+        if (state.userPosts.totalItems !== undefined) state.userPosts.totalItems += 1
         state.createLoading = false
       })
       .addCase(createPost.pending, (state) => {
@@ -222,6 +223,10 @@ const postSlice = createSlice({
       })
 
       .addCase(deletePost.fulfilled, (state, action) => {
+        // only your own posts can be deleted
+        if (state.userPosts.totalItems && state.userPosts.data.some(post => post.postId == action.payload.postId)) {
+          state.userPosts.totalItems -= 1
+        }
         for (const list of [state.userPosts, state.newsfeedPosts, state.profilePosts]) {
           list.data = list.data.filter(post => post.postId != action.payload.postId)
         }

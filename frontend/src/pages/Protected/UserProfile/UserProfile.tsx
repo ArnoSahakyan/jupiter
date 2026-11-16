@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ProfileCover from '../../../components/ProfileCover/ProfileCover';
-import PageBar from '../../../components/PageBar/PageBar';
+import ProfileHeader from '../../../components/ProfileHeader/ProfileHeader';
 import Shortcuts from '../../../components/Shortcuts/Shortcuts';
 import FriendsBar from '../../../components/FriendsBar/FriendsBar';
 import SecondaryLoader from '../../../components/shared/SecondaryLoader/SecondaryLoader';
@@ -50,10 +49,10 @@ export default function UserProfile() {
   const base = `/user/${profile.id}`;
   return (
     <div className='HomePage UserProfile'>
-      <ProfileCover user={profile} actions={<ProfileActions profile={profile} onChange={load} />} />
-      <PageBar
+      <ProfileHeader
         user={profile}
-        links={[
+        actions={<ProfileActions profile={profile} onChange={load} />}
+        tabs={[
           { title: 'Timeline', route: base },
           { title: 'Photos', route: `${base}/photos` },
           { title: 'Friends', route: `${base}/friends` },
@@ -78,28 +77,28 @@ function ProfileActions({ profile, onChange }: { profile: TProfile; onChange: ()
     action.then(onChange).catch(() => undefined).finally(() => setBusy(false));
   };
 
-  const count = `${profile.friendsCount} ${profile.friendsCount === 1 ? 'friend' : 'friends'}`;
-
   return (
     <>
-      <p>{count}</p>
       {profile.relationship === 'none' && (
-        <button className='addfriend' disabled={busy} onClick={() => run(dispatch(sendRequest(profile.id)).unwrap())}>
-          Add Friend
+        <button className='profile-button primary' disabled={busy} onClick={() => run(dispatch(sendRequest(profile.id)).unwrap())}>
+          Add friend
         </button>
       )}
       {profile.relationship === 'request_sent' && (
-        <button className='addfriend' disabled>Request Sent</button>
+        <button className='profile-button secondary' disabled>Request sent</button>
       )}
       {profile.relationship === 'request_received' && (
-        <button className='addfriend' disabled={busy} onClick={() => run(dispatch(respondRequest({ senderId: profile.id, status: 'accepted' })).unwrap())}>
-          Accept Request
+        <button className='profile-button primary' disabled={busy} onClick={() => run(dispatch(respondRequest({ senderId: profile.id, status: 'accepted' })).unwrap())}>
+          Accept request
         </button>
       )}
       {profile.relationship === 'friends' && (
-        <button className='addfriend' onClick={() => navigate('/' + ROUTES.MESSAGES, { state: { friendId: profile.id } })}>
-          Message
-        </button>
+        <>
+          <span className='profile-button secondary' aria-label='You are friends'>Friends ✓</span>
+          <button className='profile-button primary' onClick={() => navigate('/' + ROUTES.MESSAGES, { state: { friendId: profile.id } })}>
+            Message
+          </button>
+        </>
       )}
     </>
   );
