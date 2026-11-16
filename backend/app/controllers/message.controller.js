@@ -45,7 +45,7 @@ exports.getMessages = async (req, res) => {
           { senderId: friendId, receiverId: userId }
         ]
       },
-      attributes: ['messageId', 'senderId', 'receiverId', 'message'],
+      attributes: ['messageId', 'senderId', 'receiverId', 'message', 'createdAt'],
       order: [['createdAt', 'ASC']]
     });
     const response = {

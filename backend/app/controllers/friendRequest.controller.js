@@ -33,10 +33,23 @@ exports.respondToFriendRequest = async (req, res) => {
 };
 
 exports.sendFriendRequest = async (req, res) => {
-  const { receiverId } = req.body;
+  const receiverId = Number(req.body.receiverId);
   const senderId = req.userId;
 
+  if (!Number.isInteger(receiverId)) {
+    return res.status(400).json({ message: 'A valid receiverId is required' });
+  }
+
+  if (senderId === receiverId) {
+    return res.status(400).json({ message: "User can't send a request to themselves" });
+  }
+
   try {
+    const receiver = await db.user.findByPk(receiverId, { attributes: ['id'] });
+    if (!receiver) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     const existingRequest = await db.friendRequest.findOne({
       where: {
         senderId: senderId,
@@ -48,8 +61,13 @@ exports.sendFriendRequest = async (req, res) => {
       return res.status(400).json({ message: 'Friend request already sent' });
     }
 
-    if (senderId === receiverId) {
-      return res.status(400).json({ message: "User can't send a request to themselves" });
+    // They already asked you: accept their request instead of sending a second one.
+    const reverseRequest = await db.friendRequest.findOne({
+      where: { senderId: receiverId, receiverId: senderId }
+    });
+
+    if (reverseRequest) {
+      return res.status(400).json({ message: 'This user already sent you a friend request. Accept it from your requests.' });
     }
 
     const existingFriend = await db.friend.findOne({

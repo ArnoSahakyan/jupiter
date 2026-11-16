@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../../api/axios";
 import { TFriend, TRequest, Tunassocitaed } from "./friendsSlice";
 import { API_URL as url } from '../../../api/config';
+import { serverMessage } from '../../../api/errors';
 
 export const getFriendsApi = createAsyncThunk('friends_request/getFriends', async () => {
   const response = await api.get(`${url}/api/friends`);
@@ -28,10 +29,13 @@ export const getUnassociatedApi = createAsyncThunk('friends_request/getUnassocia
   return modifiedData;
 });
 
-export const sendRequest = createAsyncThunk('friends_request/sendRequest', async (data: number) => {
-  const newData = { receiverId: data }
-  const response = await api.post(`${url}/api/send-request`, newData);
-  return response.data;
+export const sendRequest = createAsyncThunk('friends_request/sendRequest', async (data: number, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`${url}/api/send-request`, { receiverId: data });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(serverMessage(error));
+  }
 });
 
 export const respondRequest = createAsyncThunk('friends_request/respondRequest', async (data: { senderId: number, status: string }, { dispatch }) => {

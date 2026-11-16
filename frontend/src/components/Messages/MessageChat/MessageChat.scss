@@ -28,6 +28,15 @@
     max-width: 90%;
     padding: 5px 10px;
     background-color: $chat-received;
+    overflow-wrap: anywhere;
+
+    .time {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: $grey1;
+      text-align: right;
+    }
   }
 }
 

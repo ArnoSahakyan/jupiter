@@ -1,21 +1,7 @@
-const { user } = require("../models");
 const supabase = require('../../supabaseClient');
 const db = require("../models");
 
 const ALLOWED_IMAGE_TYPES = ['pfp', 'coverPhoto'];
-
-exports.updatePath = async (userId, path, fieldKey) => {
-  try {
-    const userRecord = await user.findByPk(userId);
-    if (userRecord) {
-      await userRecord.update({ [fieldKey]: path });
-    } else {
-      console.error('User not found');
-    }
-  } catch (err) {
-    console.error('Failed to update profile picture path:', err);
-  }
-};
 
 exports.controllerUserImages = async (req, res) => {
   try {

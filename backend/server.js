@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
-const path = require('path');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import socket.io
 const jwt = require("jsonwebtoken");
@@ -30,14 +29,10 @@ const io = new Server(server, { // Initialize socket.io with the HTTP server
 });
 
 // Middleware and routes setup
-app.use(helmet({
-  // the frontend is on another origin and loads images from /upload
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
-}));
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
-app.use('/upload', express.static(path.join(__dirname, 'app/upload')));
 app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
@@ -102,6 +97,7 @@ io.use((socket, next) => {
 });
 
 require('./app/socket/chat')(io, db);
+require('./app/socket/presence')(io, db);
 
 // Start the server
 const PORT = process.env.PORT || 7070;

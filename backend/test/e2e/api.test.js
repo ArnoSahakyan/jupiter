@@ -80,6 +80,10 @@ test('Jupiter API end to end', async (t) => {
     assert.equal((await call('POST', '/api/auth/refresh', { body: { refreshToken: 'x' } })).status, 401);
   });
 
+  await t.test('template test routes are gone', async () => {
+    assert.equal((await call('GET', '/api/test/all')).status, 404);
+  });
+
   await t.test('protected routes need a valid token', async () => {
     assert.equal((await call('GET', '/api/user/info')).status, 403);
     assert.equal((await call('GET', '/api/user/info', { token: 'garbage' })).status, 401);
@@ -120,6 +124,18 @@ test('Jupiter API end to end', async (t) => {
     assert.equal(post.comments[0].replies[0].content, 'Thanks!');
 
     assert.equal((await call('POST', '/api/unlike', { token: bob.accessToken, body: { postId } })).status, 200);
+    assert.equal((await call('POST', '/api/unlike', { token: bob.accessToken, body: { postId } })).status, 400, 'nothing to unlike');
+  });
+
+  await t.test('simultaneous likes are only counted once', async () => {
+    const results = await Promise.all(Array.from({ length: 5 }, () =>
+      call('POST', '/api/like', { token: eve.accessToken, body: { postId } })));
+    assert.equal(results.filter(r => r.status === 201).length, 1, 'exactly one like succeeds');
+    assert.ok(results.every(r => r.status === 201 || r.status === 400));
+    const mine = await call('GET', '/api/user-posts?limit=3&offset=0', { token: alice.accessToken });
+    assert.equal(mine.data.data.find(p => p.postId === postId).likeCount, 1);
+    assert.equal((await call('POST', '/api/like', { token: eve.accessToken, body: { postId: 99999999 } })).status, 404);
+    await call('POST', '/api/unlike', { token: eve.accessToken, body: { postId } });
   });
 
   await t.test('only the author can delete a post', async () => {
@@ -130,6 +146,11 @@ test('Jupiter API end to end', async (t) => {
   await t.test('friend requests', async () => {
     assert.equal((await call('POST', '/api/send-request', { token: alice.accessToken, body: { receiverId: bob.id } })).status, 200);
     assert.equal((await call('POST', '/api/send-request', { token: alice.accessToken, body: { receiverId: bob.id } })).status, 400, 'no duplicates');
+    const reverse = await call('POST', '/api/send-request', { token: bob.accessToken, body: { receiverId: alice.id } });
+    assert.equal(reverse.status, 400, 'no request back while one is pending');
+    assert.match(reverse.data.message, /already sent you a friend request/);
+    assert.equal((await call('POST', '/api/send-request', { token: alice.accessToken, body: { receiverId: 99999999 } })).status, 404);
+    assert.equal((await call('POST', '/api/send-request', { token: alice.accessToken, body: { receiverId: 'abc' } })).status, 400);
     const requests = await call('GET', '/api/requests', { token: bob.accessToken });
     assert.ok(requests.data.some(request => request.senderId === alice.id));
     assert.equal((await call('POST', '/api/respond-request', { token: bob.accessToken, body: { senderId: alice.id, status: 'accepted' } })).status, 200);
@@ -154,13 +175,18 @@ test('Jupiter API end to end', async (t) => {
       await wait(300);
       sa.emit('send_message', { receiverId: bob.id, message: `chat test ${run}` });
       await wait(500);
-      assert.ok(sb.inbox.some(m => m.message === `chat test ${run}` && m.senderId === alice.id), 'Bob receives it');
+      const received = sb.inbox.find(m => m.message === `chat test ${run}`);
+      assert.equal(received?.senderId, alice.id, 'Bob receives it');
+      assert.ok(received.messageId > 0, 'with its real id');
+      assert.ok(Math.abs(new Date(received.createdAt) - Date.now()) < 60000, 'and when it was sent');
       assert.equal(se.inbox.length, 0, 'Eve does not');
     } finally {
       [sa, sb, se].forEach(socket => socket.close());
     }
     const history = await call('GET', `/api/messages/${alice.id}`, { token: bob.accessToken });
-    assert.ok(history.data.messages.some(m => m.message === `chat test ${run}`), 'saved in history');
+    const saved = history.data.messages.find(m => m.message === `chat test ${run}`);
+    assert.ok(saved, 'saved in history');
+    assert.ok(saved.createdAt, 'history includes timestamps');
     assert.equal((await call('POST', '/api/messages', { token: eve.accessToken, body: { receiverId: alice.id, message: 'spam' } })).status, 403);
   });
 

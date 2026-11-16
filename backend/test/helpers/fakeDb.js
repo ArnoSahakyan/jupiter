@@ -15,7 +15,7 @@ const createFakeDb = ({ friendships = [] } = {}) => {
     message: {
       create: async (message) => {
         savedMessages.push(message);
-        return { messageId: savedMessages.length, ...message };
+        return { messageId: savedMessages.length, createdAt: new Date(), ...message };
       }
     },
     savedMessages

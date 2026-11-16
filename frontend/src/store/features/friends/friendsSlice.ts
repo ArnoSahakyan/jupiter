@@ -54,7 +54,13 @@ export type TMessages = {
   senderId: number;
   receiverId: number;
   message: string;
+  createdAt?: string;
 }
+
+// Temporary ids for messages shown before the server has an id for them.
+// Negative, so they never clash with real (positive) database ids.
+let localMessageId = 0;
+const nextLocalId = () => --localMessageId;
 
 const initialState: TUsers = {
   requests: [],
@@ -74,22 +80,21 @@ const friendsSlice = createSlice({
       const friend = state.friendsBack.find(friend => friend.id === payload.senderId);
 
       if (friend) {
-        const newMessage = {
-          messageId: new Date().getUTCMilliseconds(),
-          ...payload
-        };
-        friend.messages.push(newMessage);
+        friend.messages.push({
+          ...payload,
+          messageId: payload.messageId ?? nextLocalId(),
+          createdAt: payload.createdAt ?? new Date().toISOString()
+        });
       }
     },
     sendMessage: (state, { payload }) => {
       const friend = state.friendsBack.find(friend => friend.id === payload.receiverId);
       if (friend) {
-        const newMessage = {
-          messageId: new Date().getUTCMilliseconds(),
-          ...payload
-        };
-
-        friend.messages.push(newMessage);
+        friend.messages.push({
+          ...payload,
+          messageId: nextLocalId(),
+          createdAt: new Date().toISOString()
+        });
       }
     }
   },
@@ -167,8 +172,8 @@ const friendsSlice = createSlice({
         state.respondLoading = { loading: true, userId: action.meta.arg }
         state.error = undefined;
       })
-      .addCase(sendRequest.rejected, (state, { error }) => {
-        state.error = error.message
+      .addCase(sendRequest.rejected, (state, { payload, error }) => {
+        state.error = (payload as string | undefined) ?? error.message
         state.respondLoading = { loading: false, userId: undefined }
       })
 

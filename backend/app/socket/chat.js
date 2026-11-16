@@ -45,21 +45,19 @@ module.exports = function registerChatHandlers(io, db) {
         const friendship = await findFriendshipBetween(db, userId, receiverId);
         if (!friendship) return; // can only message friends
 
-        await db.message.create({ senderId: userId, receiverId, message });
+        const saved = await db.message.create({ senderId: userId, receiverId, message });
 
         // Build the payload on the server; never forward client data as-is.
         socket.to(roomName(friendship.friendshipId)).emit('receive_message', {
+          messageId: saved.messageId,
           senderId: userId,
           receiverId,
-          message
+          message,
+          createdAt: saved.createdAt
         });
       } catch (error) {
         console.error('Error sending message:', error);
       }
-    });
-
-    socket.on('disconnect', () => {
-      console.log(`User ${userId} disconnected`);
     });
   });
 };

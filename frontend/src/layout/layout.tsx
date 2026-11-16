@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../store/setup";
 import { fetchUserInfo } from "../store/features/userInfo/userThunks";
 import { getFriendsError } from "../store/features/friends/friendsSlice";
+import usePresence from "../hooks/usePresence";
 
 const Layout = () => {
   const { isAuthenticated } = useAuth();
@@ -18,6 +19,7 @@ const Layout = () => {
   const postErrors = useSelector(postError)
   const friendErrors = useSelector(getFriendsError)
   const dispatch = useDispatch<AppDispatch>()
+  usePresence(isAuth)
 
   // Refresh the saved profile once per app load / login.
   useEffect(() => {

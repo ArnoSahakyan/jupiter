@@ -17,10 +17,10 @@ Part of the [Jupiter](../README.md) repository; the web app is in [`../frontend`
 ## Features
 
 - Sign up, log in, token refresh
-- Profile: name, job, profile picture, cover photo, online status
+- Profile: name, job, profile picture, cover photo, online status (set automatically when you open or close the app)
 - Posts with text and/or an image, likes, comments and replies
 - Friend requests, friends list, friend suggestions, user search
-- One-to-one real-time chat between friends, with saved history
+- One-to-one real-time chat between friends, with saved, timestamped history
 
 ### Security
 
@@ -123,7 +123,7 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 | GET | `/api/user-posts?limit=&offset=` | Your posts, with comments and replies |
 | GET | `/api/posts?limit=&offset=` | Newsfeed: everyone else's posts |
 | GET | `/api/photos?limit=&offset=` | Your posts that have an image |
-| POST | `/api/like` / `/api/unlike` | `{ postId }` |
+| POST | `/api/like` / `/api/unlike` | `{ postId }`. One like per user per post (enforced by the database) |
 | POST | `/api/comment` | `{ postId, content, parentId? }`. Set `parentId` to reply to a comment |
 
 ### Friends
@@ -134,14 +134,14 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 | GET | `/api/unassociated-users` | Suggestions: users who aren't friends and have no pending request |
 | DELETE | `/api/delete-friend/:friendId` | Remove a friend |
 | GET | `/api/requests` | Friend requests sent to you |
-| POST | `/api/send-request` | `{ receiverId }` |
+| POST | `/api/send-request` | `{ receiverId }`. Rejected if they already sent you a request (accept theirs instead) |
 | POST | `/api/respond-request` | `{ senderId, status }` (`accepted` or anything else to decline) |
 
 ### Messages
 
 | Method | Route | Body / notes |
 | --- | --- | --- |
-| GET | `/api/messages/:friendId` | Chat history with a friend |
+| GET | `/api/messages/:friendId` | Chat history with a friend, including `createdAt` |
 | POST | `/api/messages` | `{ receiverId, message }`. Friends only, 1-255 characters |
 
 ### Real-time chat (Socket.IO)
@@ -152,7 +152,10 @@ Connect with the access token: `io(API_URL, { auth: { token: accessToken } })`.
 | --- | --- | --- |
 | `join_room` | client to server | `friendshipId`. Only works for your own friendships |
 | `send_message` | client to server | `{ receiverId, message }`. Friends only, 1-255 characters; the message is saved |
-| `receive_message` | server to client | `{ senderId, receiverId, message }` |
+| `receive_message` | server to client | `{ messageId, senderId, receiverId, message, createdAt }` |
+| `presence` | server to client | `{ onlineStatus }`, sent on connect |
+
+The frontend keeps one socket open while you're logged in. When your last connection closes and stays closed for 10 seconds, you're marked offline; when you come back you're marked online again, unless you set yourself offline.
 
 ## Project structure
 
@@ -168,6 +171,7 @@ app/
   models/                 Sequelize models and relations
   routes/                 Route definitions
   socket/chat.js          Real-time chat handlers
+  socket/presence.js      Online status from open connections
   utils/refreshCookie.js  Refresh-token cookie settings
 test/
   unit/                   Tests that need no database or server
