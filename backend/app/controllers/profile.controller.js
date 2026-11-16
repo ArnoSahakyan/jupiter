@@ -4,7 +4,7 @@ const db = require('../models');
 const { listPosts, listPhotos } = require('../services/posts');
 
 const { Op } = db.Sequelize;
-const PUBLIC_FIELDS = ['id', 'fname', 'username', 'pfp', 'coverPhoto', 'onlineStatus', 'job'];
+const PUBLIC_FIELDS = ['id', 'fname', 'username', 'pfp', 'coverPhoto', 'onlineStatus', 'job', 'createdAt'];
 
 // Resolve :id to an existing user, or answer 400/404 and return null.
 const findTarget = async (req, res) => {

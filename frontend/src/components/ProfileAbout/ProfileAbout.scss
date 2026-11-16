@@ -1,0 +1,73 @@
+@use '@assets/webColors' as *;
+
+.ProfileAbout {
+  position: sticky;
+  top: 67px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background-color: $white;
+  box-shadow: 0 1px 2px rgba(23, 12, 48, 0.06);
+
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: $black;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: $dark-grey;
+    overflow-wrap: anywhere;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: $grey1;
+    }
+
+    .muted {
+      color: $grey1;
+    }
+  }
+
+  button {
+    margin-top: 4px;
+    padding: 9px;
+    border: none;
+    border-radius: 10px;
+    background-color: $grey-bg;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: $dark-grey;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e2ddef;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Phones: the header already shows the role and counts.
+@media screen and (max-width: 767px) {
+  .ProfileAbout {
+    display: none;
+  }
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getFriendsBack, getFriendsLoading, getRequests, getRespondLoading, getUnassociated } from '../../../store/features/friends/friendsSlice'
 import { deleteFriend, getFriendsApi, getRequestsApi, getUnassociatedApi, respondRequest, sendRequest } from '../../../store/features/friends/friendThunks'
 import { AppDispatch } from '../../../store/setup'
@@ -23,7 +23,8 @@ export default function FriendsPage() {
   const people = useSelector(getUnassociated)
   const loading = useSelector(getFriendsLoading)
   const respond = useSelector(getRespondLoading)
-  const [tab, setTab] = useState<Tab>('friends')
+  const startTab = (useLocation().state as { tab?: Tab } | null)?.tab
+  const [tab, setTab] = useState<Tab>(startTab ?? 'friends')
   const [query, setQuery] = useState('')
   const [confirming, setConfirming] = useState<number | null>(null)
   const [sent, setSent] = useState<Set<number>>(new Set())

@@ -21,7 +21,7 @@ const validationSchema = object({
   job: string().trim().max(JOB_MAX, `Keep it under ${JOB_MAX} characters`)
 })
 
-// "Edit profile" dialog, opened from the account menu, the mobile menu and Shortcuts.
+// "Edit profile" dialog, opened from the account menu, the mobile menu and the profile page.
 export default function EditProfileModal({ onClose }: { onClose: () => void }) {
   const dispatch = useDispatch<AppDispatch>()
   const fname = useSelector(getName)

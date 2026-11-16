@@ -6,40 +6,233 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background-color: $white;
+  gap: 12px;
+  padding: 18px 20px;
   border-radius: 14px;
+  background-color: $white;
   box-shadow: 0 1px 2px rgba(23, 12, 48, 0.06);
-  padding: 20px;
 
-  .FriendSkeleton {
-    width: 100%;
-    scale: 0.9;
-    transform-origin: left;
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: $black;
+    }
+
+    .count {
+      padding: 1px 8px;
+      border-radius: 999px;
+      background-color: $grey-bg;
+      font-size: 12px;
+      font-weight: 600;
+      color: $dark-grey;
+    }
+
+    a {
+      font-size: 13px;
+      font-weight: 600;
+      color: $primary;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__online {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: -6px;
+    font-size: 13px;
+    color: $grey1;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $online;
+    }
   }
 
   &__search {
-    form {
-      input {
-        width: 100%;
-        padding: 5px 10px;
-        border: 1px solid $grey-bg;
-        outline: none;
-      }
+    width: 100%;
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: $grey-bg;
+    font-family: inherit;
+    font-size: 14px;
+    color: $black;
+    outline: none;
+
+    &:focus {
+      border-color: $primary-light;
+      background-color: $white;
     }
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    min-height: 50px;
-    max-height: 440px;
-    overflow: auto;
-    transition: 200ms;
+    gap: 2px;
+    max-height: 420px;
+    margin: 0 -8px;
+    overflow-y: auto;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $grey-bg;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: -2px;
+    }
+
+    .avatar {
+      position: relative;
+      flex-shrink: 0;
+
+      img {
+        display: block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: top;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        border: 2px solid $white;
+        background-color: $offline;
+      }
+
+      &.online::after { background-color: $online; }
+      &.away::after { background-color: $away; }
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      strong,
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      strong {
+        font-size: 14px;
+        font-weight: 600;
+        color: $black;
+      }
+
+      span {
+        font-size: 12px;
+        color: $grey1;
+      }
+    }
+  }
+
+  &__skeleton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 8px;
+
+    .circle,
+    .lines span {
+      background-color: $grey-bg;
+      animation: friends-bar-pulse 1.4s ease-in-out infinite;
+    }
+
+    .circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      span {
+        width: 110px;
+        height: 10px;
+        border-radius: 5px;
+
+        & + span {
+          width: 60px;
+        }
+      }
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    p {
+      font-size: 14px;
+      line-height: 1.45;
+      color: $grey1;
+    }
+
+    a {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background-color: $primary;
+      font-size: 14px;
+      font-weight: 600;
+      color: $white;
+      text-decoration: none;
+
+      &:hover {
+        background-color: $primary-dark;
+      }
+    }
+  }
+
+  &__none {
+    font-size: 14px;
+    color: $grey1;
   }
 }
 
+@keyframes friends-bar-pulse {
+  50% { opacity: 0.5; }
+}
 
 @media screen and (max-width: 767px) {
   .FriendsBar {

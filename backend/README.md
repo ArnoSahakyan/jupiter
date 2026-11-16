@@ -117,7 +117,7 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 
 | Method | Route | Body / notes |
 | --- | --- | --- |
-| GET | `/api/users/:id` | Someone's profile, with `relationship` to you (`self`, `friends`, `request_sent`, `request_received`, `none`), `friendshipId`, `friendsCount` and `postsCount`. Email is only included on your own profile |
+| GET | `/api/users/:id` | Someone's profile (incl. `createdAt`, when they joined), with `relationship` to you (`self`, `friends`, `request_sent`, `request_received`, `none`), `friendshipId`, `friendsCount` and `postsCount`. Email is only included on your own profile |
 | GET | `/api/users/:id/posts?limit=&offset=` | Their posts, with comments and whether you liked each one |
 | GET | `/api/users/:id/photos?limit=&offset=` | Their posts that have an image |
 | GET | `/api/users/:id/friends` | Their friends (no emails) |

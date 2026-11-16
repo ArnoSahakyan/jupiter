@@ -25,7 +25,7 @@
   }
 }
 
-// Tablet: two columns (Shortcuts + Friends on the left, content on the right),
+// Tablet: two columns (About + Friends on the left, content on the right),
 // because three columns are too narrow below 1024px.
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .HomePage {
@@ -35,7 +35,7 @@
       // rows fit the cards; the feed spans both, so the left column has no gap
       grid-template-rows: auto 1fr;
 
-      // Shortcuts scrolls away normally...
+      // About scrolls away normally...
       > :nth-child(1) {
         grid-column: 1;
         grid-row: 1;

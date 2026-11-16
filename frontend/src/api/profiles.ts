@@ -11,6 +11,7 @@ export type TProfile = {
   coverPhoto: string;
   onlineStatus: string;
   job: string | null;
+  createdAt: string; // when they joined
   email?: string; // only on your own profile
   relationship: TRelationship;
   friendshipId: number | null;

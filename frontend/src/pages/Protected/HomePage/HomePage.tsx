@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ProfileHeader from '../../../components/ProfileHeader/ProfileHeader'
-import Shortcuts from '../../../components/Shortcuts/Shortcuts'
+import ProfileAbout from '../../../components/ProfileAbout/ProfileAbout'
 import FriendsBar from '../../../components/FriendsBar/FriendsBar'
 import EditProfileModal from '../../../components/EditForm/EditForm'
 import { fetchProfile } from '../../../api/profiles'
@@ -24,12 +24,17 @@ export default function HomePage() {
   const friends = useSelector(getFriendsBack)
   const userPosts = useSelector(userPostsSelector)
   const [postsCount, setPostsCount] = useState<number | undefined>(undefined)
+  const [joinedAt, setJoinedAt] = useState<string | undefined>(undefined)
   const [editOpen, setEditOpen] = useState(false)
   const closeEdit = useCallback(() => setEditOpen(false), [])
 
-  // Post count for the header before the timeline has loaded (e.g. on the Photos tab).
+  // Post count for the header before the timeline has loaded (e.g. on the Photos tab),
+  // and the join date for the About card.
   useEffect(() => {
-    if (id) fetchProfile(id).then(profile => setPostsCount(profile.postsCount)).catch(() => undefined)
+    if (id) fetchProfile(id).then(profile => {
+      setPostsCount(profile.postsCount)
+      setJoinedAt(profile.createdAt)
+    }).catch(() => undefined)
   }, [id])
 
   return (
@@ -59,7 +64,13 @@ export default function HomePage() {
         ]}
       />
       <section>
-        <Shortcuts />
+        <ProfileAbout
+          firstName={(fname ?? '').split(' ')[0]}
+          job={job ?? null}
+          joinedAt={joinedAt}
+          friendsCount={friends.length}
+          onEdit={() => setEditOpen(true)}
+        />
         <Outlet />
         <FriendsBar />
       </section>

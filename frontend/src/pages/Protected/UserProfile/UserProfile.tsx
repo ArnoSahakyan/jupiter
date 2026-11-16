@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileHeader from '../../../components/ProfileHeader/ProfileHeader';
-import Shortcuts from '../../../components/Shortcuts/Shortcuts';
+import ProfileAbout from '../../../components/ProfileAbout/ProfileAbout';
 import FriendsBar from '../../../components/FriendsBar/FriendsBar';
 import SecondaryLoader from '../../../components/shared/SecondaryLoader/SecondaryLoader';
 import { TProfile, fetchProfile } from '../../../api/profiles';
@@ -59,9 +59,14 @@ export default function UserProfile() {
         ]}
       />
       <section>
-        <Shortcuts />
+        <ProfileAbout
+          firstName={profile.fname.split(' ')[0]}
+          job={profile.job}
+          joinedAt={profile.createdAt}
+          friendsCount={profile.friendsCount}
+        />
         <Outlet context={{ profile }} />
-        <FriendsBar />
+        <FriendsBar title='Your friends' />
       </section>
     </div>
   );
