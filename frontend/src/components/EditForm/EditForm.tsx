@@ -8,7 +8,7 @@ import { AppDispatch } from '../../store/setup'
 
 const validationSchema = object({
   fname: string().min(4).max(30).required("full name is a required field"),
-  job: string().min(3).required()
+  job: string().trim().max(50)
 })
 
 interface EditFormProps {
@@ -48,7 +48,7 @@ export default function EditForm({ toggleModal }: EditFormProps) {
             </div>
 
             <div className="input-wrapper">
-              <Field type="text" name="job" id="job" placeholder='Your Job' />
+              <Field type="text" name="job" id="job" placeholder='Your role, e.g. Student (optional)' />
               <ErrorMessage name="job" component="div" className="error" />
             </div>
 
