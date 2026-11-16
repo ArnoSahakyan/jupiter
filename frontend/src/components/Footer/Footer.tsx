@@ -11,11 +11,6 @@ const exploreLinks = [
   { title: 'Messages', route: '/' + ROUTES.MESSAGES },
 ]
 
-const projectLinks = [
-  { title: 'Frontend source', href: 'https://github.com/ArnoSahakyan/winku' },
-  { title: 'Backend source', href: 'https://github.com/ArnoSahakyan/winkuback' },
-]
-
 export default function Footer() {
   return (
     <footer className='FooterBG'>
@@ -29,16 +24,6 @@ export default function Footer() {
           <Title title={<>Explore</>} />
           {exploreLinks.map(link => (
             <li key={link.title}><Link to={link.route}>{link.title}</Link></li>
-          ))}
-        </ul>
-
-        <ul className='Footer__links Footer-ul'>
-          <Title title={<>Project</>} />
-          {projectLinks.map(link => (
-            <li key={link.title}>
-              <span>&#xF3ED;</span>
-              <a href={link.href} target="_blank" rel="noopener noreferrer">{link.title}</a>
-            </li>
           ))}
         </ul>
       </div>

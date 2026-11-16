@@ -33,6 +33,21 @@
   box-sizing: border-box;
 }
 
+body {
+  background-color: $grey-bg;
+}
+
+// Full-height column so the footer sits at the bottom even on short pages.
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  > main {
+    flex: 1 0 auto;
+  }
+}
+
 ol,
 ul {
   list-style: none;

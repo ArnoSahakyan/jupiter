@@ -1,6 +1,7 @@
 @use '@assets/webColors' as *;
 
 .Photos {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;

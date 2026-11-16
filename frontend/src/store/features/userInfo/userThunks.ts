@@ -72,6 +72,14 @@ export const changeUserImage = createAsyncThunk(
   }
 );
 
+// Reload the logged-in user's profile so the saved (persisted) copy stays current.
+export const fetchUserInfo = createAsyncThunk('userInfo/fetchUserInfo',
+  async () => {
+    const response = await api.get(`${url}/api/user/info`)
+    return response.data
+  }
+)
+
 export const changeOnlineStatus = createAsyncThunk('userInfo/changeOnlineStatus',
   async (data: { onlineStatus: string }) => {
     const response = await api.patch(`${url}/api/user/status`, data)

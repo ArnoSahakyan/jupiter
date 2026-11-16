@@ -6,7 +6,9 @@ import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import { postError } from "../store/features/post/postSlice";
 import { getUserError } from "../store/features/userInfo/userInfoSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../store/setup";
+import { fetchUserInfo } from "../store/features/userInfo/userThunks";
 import { getFriendsError } from "../store/features/friends/friendsSlice";
 
 const Layout = () => {
@@ -15,6 +17,14 @@ const Layout = () => {
   const error = useSelector(getUserError)
   const postErrors = useSelector(postError)
   const friendErrors = useSelector(getFriendsError)
+  const dispatch = useDispatch<AppDispatch>()
+
+  // Refresh the saved profile once per app load / login.
+  useEffect(() => {
+    if (isAuth) {
+      dispatch(fetchUserInfo())
+    }
+  }, [dispatch, isAuth])
 
   useEffect(() => {
     error && notifyError(error)

@@ -69,17 +69,8 @@ export default function CreatePost() {
               <div className="attachement">
                 <Field className="text-field" as="textarea" name="content" placeholder="Write your post..." />
                 <div className="file-input">
-                  <label htmlFor="file">
-                    <span>&#xF49E;</span>
-                  </label>
-                  <label htmlFor="file">
+                  <label htmlFor="file" title="Add an image" aria-label="Add an image">
                     <span>&#xF42A;</span>
-                  </label>
-                  <label htmlFor="file">
-                    <span>&#xF21C;</span>
-                  </label>
-                  <label htmlFor="file">
-                    <span> &#xF219;</span>
                   </label>
                   <input
                     type="file"

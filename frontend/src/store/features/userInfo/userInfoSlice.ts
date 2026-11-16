@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { changeOnlineStatus, changeUserImage, changeUserData, loginUser } from "./userThunks";
+import { changeOnlineStatus, changeUserImage, changeUserData, fetchUserInfo, loginUser } from "./userThunks";
 
 export type TuserInfo = {
   id: number | undefined;
@@ -66,6 +66,11 @@ const userInfoSlice = createSlice({
         };
       })
       // loginUser errors are shown by the login form itself (see useAuth.signin)
+
+      .addCase(fetchUserInfo.fulfilled, (state, { payload }) => {
+        // keep tokens and roles, refresh the profile fields from the server
+        state.data = { ...state.data, ...payload };
+      })
 
       .addCase(changeUserImage.fulfilled, (state, action) => {
         if (action.payload.type === "pfp") {

@@ -5,7 +5,7 @@
   background-color: $white;
   border-radius: 5px;
   display: flex;
-  justify-content: space-between;
+  gap: 20px;
   position: relative;
 
   .input-wrapper {
@@ -22,6 +22,7 @@
   }
 
   &__img {
+    flex-shrink: 0;
     width: 57px;
     height: 57px;
     border-radius: 50%;
@@ -36,8 +37,8 @@
 
   &__form {
     display: flex;
-    justify-content: flex-end;
-    width: 85%;
+    flex: 1;
+    min-width: 0;
 
     form {
       width: 100%;
@@ -120,6 +121,7 @@
   .CreatePost {
     padding: 20px;
     width: 100%;
+    gap: 12px;
 
     .input-wrapper {
       .error {
