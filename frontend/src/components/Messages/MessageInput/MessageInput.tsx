@@ -18,13 +18,21 @@ export default function MessageInput({ friend, socket }: { friend: TFriendBack, 
   const message = text.trim();
   const canSend = message.length > 0 && socket !== null;
 
-  // Grow with the text; start fresh (and focused) when switching chats.
+  // Grow with the text up to about five lines, then scroll. Skipped while the
+  // field is hidden (scrollHeight is 0 then), so it never collapses; the CSS
+  // min-height keeps it one line tall in that case.
   useEffect(() => {
     const field = fieldRef.current;
     if (!field) return;
     field.style.height = 'auto';
-    field.style.height = `${Math.min(field.scrollHeight, MAX_ROWS_HEIGHT)}px`;
-  }, [text]);
+    const needed = field.scrollHeight;
+    if (needed === 0) {
+      field.style.height = '';
+      return;
+    }
+    field.style.height = `${Math.min(needed, MAX_ROWS_HEIGHT)}px`;
+    field.style.overflowY = needed > MAX_ROWS_HEIGHT ? 'auto' : 'hidden';
+  }, [text, friend.id]);
 
   useEffect(() => {
     setText('');

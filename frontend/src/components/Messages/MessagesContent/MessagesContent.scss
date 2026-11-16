@@ -208,6 +208,11 @@
     padding: 16px 18px;
     overflow-y: auto;
     background-color: #faf9fd;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
 
     .day {
       display: flex;
