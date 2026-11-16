@@ -1,0 +1,165 @@
+@use '@assets/webColors' as *;
+
+.PersonCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid $grey-bg;
+  border-radius: 14px;
+  background-color: $white;
+  transition: border-color 150ms, box-shadow 150ms;
+
+  &:hover {
+    border-color: #ddd6ee;
+    box-shadow: 0 4px 14px rgba(23, 12, 48, 0.06);
+  }
+
+  &__who {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+
+    &:hover strong {
+      text-decoration: underline;
+    }
+  }
+
+  &__avatar {
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      display: block;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    &.online::after,
+    &.away::after,
+    &.offline::after {
+      content: '';
+      position: absolute;
+      right: 1px;
+      bottom: 1px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid $white;
+      background-color: $offline;
+    }
+
+    &.online::after { background-color: $online; }
+    &.away::after { background-color: $away; }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    strong {
+      font-size: 15px;
+      font-weight: 600;
+      color: $black;
+    }
+
+    span {
+      font-size: 13px;
+      color: $grey1;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+}
+
+// Small buttons used in PersonCard actions
+.person-button {
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &.primary {
+    background-color: $primary;
+    color: $white;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-dark;
+    }
+  }
+
+  &.secondary {
+    border-color: #d9d4e6;
+    background-color: $white;
+    color: $dark-grey;
+
+    &:hover:not(:disabled) {
+      background-color: $grey-bg;
+    }
+  }
+
+  &.danger {
+    background-color: #c0392b;
+    color: $white;
+
+    &:hover:not(:disabled) {
+      background-color: #a93226;
+    }
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $grey1;
+
+    &:hover:not(:disabled) {
+      background-color: $grey-bg;
+      color: $black;
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .PersonCard {
+    flex-wrap: wrap;
+
+    &__actions {
+      width: 100%;
+
+      .person-button {
+        flex: 1;
+      }
+    }
+  }
+}

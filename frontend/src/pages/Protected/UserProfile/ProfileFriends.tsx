@@ -1,44 +1,57 @@
 import { useEffect, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useOutletContext } from 'react-router-dom';
 import { TProfile, TProfileFriend, fetchProfileFriends } from '../../../api/profiles';
 import { serverMessage } from '../../../api/errors';
-import { getUserID } from '../../../store/features/userInfo/userInfoSlice';
-import { profilePath } from '../../../routes/routes';
+import PersonCard from '../../../components/PersonCard/PersonCard';
 import FriendSkeleton from '../../../components/shared/Skeletons/FriendSkeleton';
-import Title from '../../../components/shared/Title/Title';
 import '../FriendsPage/FriendsPage.scss';
-import '../FriendsPage/FriendBar.scss';
+
+const STATUS_LABEL: Record<string, string> = { online: 'Online', away: 'Away', offline: 'Offline' };
 
 // Friends tab of someone else's profile.
 export default function ProfileFriends() {
   const { profile } = useOutletContext<{ profile: TProfile }>();
-  const ownId = useSelector(getUserID);
   const [friends, setFriends] = useState<TProfileFriend[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     setFriends(null);
+    setError(null);
     fetchProfileFriends(profile.id).then(setFriends).catch(err => setError(serverMessage(err)));
   }, [profile.id]);
 
+  const firstName = profile.fname.split(' ')[0];
+  const shown = (friends ?? []).filter(friend =>
+    `${friend.fname} ${friend.username}`.toLowerCase().includes(query.trim().toLowerCase()));
+
   return (
     <div className='FriendsPage'>
-      <Title title={<>{profile.fname}'s friends</>} />
+      <div className='FriendsPage__header'>
+        <h2>{firstName}'s friends{friends ? ` · ${friends.length}` : ''}</h2>
+        {friends && friends.length > 6 && (
+          <input type='search' className='FriendsPage__search' placeholder='Search friends' aria-label='Search friends'
+            value={query} onChange={e => setQuery(e.target.value)} />
+        )}
+      </div>
       <div className='FriendsPage__list'>
-        {error && <p className='no-users'>{error}</p>}
+        {error && <div className='FriendsPage__empty'><strong>{error}</strong></div>}
         {!error && friends === null && <><FriendSkeleton /><FriendSkeleton /></>}
-        {friends?.length === 0 && <p className='no-users'>No friends yet</p>}
-        {friends?.map(friend => (
-          <Link key={friend.id} to={profilePath(friend.id, ownId)} className='FriendBar profile-link'>
-            <div className='FriendBar__content'>
-              <img src={friend.pfp} alt={friend.fname} />
-              <div className='name'>
-                <h5>{friend.fname}</h5>
-                {friend.job && <span>{friend.job}</span>}
-              </div>
-            </div>
-          </Link>
+        {friends?.length === 0 && (
+          <div className='FriendsPage__empty'>
+            <strong>No friends yet</strong>
+            <span>{firstName} hasn't added any friends.</span>
+          </div>
+        )}
+        {shown.map(friend => (
+          <PersonCard
+            key={friend.id}
+            id={friend.id}
+            name={friend.fname}
+            pfp={friend.pfp}
+            status={friend.onlineStatus}
+            detail={friend.job || STATUS_LABEL[friend.onlineStatus] || `@${friend.username}`}
+          />
         ))}
       </div>
     </div>
