@@ -1,0 +1,95 @@
+@use '@assets/webColors' as *;
+
+.Lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 72px;
+  background-color: rgba(10, 6, 22, 0.92);
+  animation: lightbox-fade 150ms ease-out;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    object-fit: contain;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  button {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: $white;
+    cursor: pointer;
+    transition: background-color 150ms;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.24);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $white;
+      outline-offset: 2px;
+    }
+  }
+
+  &__close {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  &__nav {
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+
+    &.prev { left: 16px; }
+    &.next { right: 16px; }
+  }
+
+  &__count {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.12);
+    font-size: 13px;
+    color: $white;
+  }
+}
+
+@keyframes lightbox-fade {
+  from { opacity: 0; }
+}
+
+@media screen and (max-width: 767px) {
+  .Lightbox {
+    padding: 64px 12px;
+
+    &__nav {
+      top: auto;
+      bottom: 12px;
+      transform: none;
+      width: 44px;
+      height: 44px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Lightbox {
+    animation: none;
+  }
+}
