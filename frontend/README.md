@@ -2,11 +2,11 @@
 
 **Jupiter** is a small social network for students: share posts and photos, find friends and chat in real time.
 
-This is the web app. The API lives in a separate repository: [jupiter-back](https://github.com/ArnoSahakyan/winkuback).
+This is the web app, part of the [Jupiter](../README.md) repository. The API is in [`../backend`](../backend).
 
 ## Features
 
-- Sign up and log in (sessions refresh automatically)
+- Sign up and log in; sessions renew silently through an httpOnly refresh cookie
 - Profile with name, job, profile picture and cover photo
 - Posts with text and/or an image, likes, comments and replies
 - Newsfeed with everyone's posts, and a Photos page with your images
@@ -29,7 +29,7 @@ This is the web app. The API lives in a separate repository: [jupiter-back](http
 ### Prerequisites
 
 - Node.js 18+
-- The [Jupiter backend](https://github.com/ArnoSahakyan/winkuback) running locally or deployed
+- The [backend](../backend) running (or run everything with `docker compose up --build` from the repository root)
 
 ### 1. Install dependencies
 
@@ -37,13 +37,15 @@ This is the web app. The API lives in a separate repository: [jupiter-back](http
 npm install
 ```
 
-### 2. Point the app at the backend
+### 2. Point the app at the backend (optional)
 
-Set the backend URL in `.env` in the project root:
+In development the app talks to `http://localhost:8080` by default. To change it, copy `.env.example` to `.env`:
 
-```env
-VITE_BACK_BASE_URL=http://localhost:8080
-```
+| Variable | Description |
+| --- | --- |
+| `VITE_BACK_BASE_URL` | Backend URL, used for both the API and the chat socket |
+| `VITE_API_URL` | Overrides the API URL. Set it to empty in production when `/api` is proxied through the frontend's domain (see Deployment) |
+| `VITE_SOCKET_URL` | Overrides the chat socket URL (always the backend itself) |
 
 The backend's `CORS` setting must allow the frontend's URL (`http://localhost:5173` for local development).
 
@@ -69,7 +71,8 @@ Open http://localhost:5173 and sign up for an account.
 ```text
 public/                   Logos, favicon and static images
 src/
-  api/axios.ts            API client: adds the access token, refreshes it when it expires
+  api/config.ts           API and socket URLs
+  api/axios.ts            API client: adds the access token, renews it via the refresh cookie when it expires
   assets/                 Fonts and the color palette (_webColors.scss)
   components/             UI pieces: navigation, feed, posts, comments, chat, sidebars, footer, ...
     shared/               Loaders, skeletons, modal, small reusable bits
@@ -91,4 +94,11 @@ Pages under `Protected/` need a logged-in user (`ProtectedRoute`); the login and
 
 ## Deployment
 
-The app is a static site. `npm run build` outputs `dist/`. `vercel.json` sends every route to `index.html`, so deep links like `/messages` work on Vercel. Set `VITE_BACK_BASE_URL` to the deployed backend URL in the hosting provider's environment settings.
+The app is a static site. `npm run build` outputs `dist/`.
+
+`vercel.json` does two things on Vercel:
+
+- proxies `/api/*` to the backend, so the API is on the same domain as the app and the refresh cookie is first-party in every browser (Safari and others block third-party cookies). Update the backend address in it;
+- sends every other route to `index.html`, so deep links like `/messages` work.
+
+Set these in the hosting provider's environment settings: `VITE_API_URL` empty, and `VITE_SOCKET_URL` to the backend URL (proxies don't carry WebSockets).

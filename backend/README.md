@@ -2,7 +2,7 @@
 
 REST and real-time API for **Jupiter**, a small social network for students. Users can sign up, post text and photos, like and comment, add friends and chat in real time.
 
-The frontend lives in a separate repository: [jupiter-front](https://github.com/ArnoSahakyan/winku).
+Part of the [Jupiter](../README.md) repository; the web app is in [`../frontend`](../frontend).
 
 ## Tech stack
 
@@ -10,7 +10,8 @@ The frontend lives in a separate repository: [jupiter-front](https://github.com/
 - **Socket.IO** for real-time chat
 - **PostgreSQL + Sequelize** for data
 - **Supabase Storage** for images (profile pictures, covers, post photos)
-- **JWT** access and refresh tokens, **bcrypt** password hashing
+- **JWT** access tokens and an httpOnly refresh-token cookie, **bcrypt** password hashing
+- **umzug** for database migrations
 - **multer + sharp** to accept uploads and convert them to compressed WebP
 
 ## Features
@@ -24,7 +25,8 @@ The frontend lives in a separate repository: [jupiter-front](https://github.com/
 ### Security
 
 - Passwords hashed with bcrypt (cost 12)
-- Rate limits on auth routes: 10 failed logins per IP and username per 15 minutes, 20 signups per IP per hour, 100 auth requests per IP per 15 minutes
+- The refresh token is an httpOnly cookie (scripts can't read it), limited to `/api/auth`
+- Rate limits on auth routes: 10 failed logins per IP and username per 15 minutes, 50 signups per IP per hour, 100 auth requests per IP per 15 minutes
 - Signup and login input validated on the server
 - One generic error for a wrong username or password, so valid usernames can't be discovered
 - Security headers via `helmet`
@@ -33,87 +35,73 @@ The frontend lives in a separate repository: [jupiter-front](https://github.com/
 
 ## Getting started
 
+The quickest way to run everything (database, API and web app) is `docker compose up --build` from the repository root; see the [root README](../README.md). To run the API on its own:
+
 ### Prerequisites
 
 - Node.js 18.17+ or 20.3+
-- PostgreSQL (any recent version; the quickest way is Docker, see below)
+- PostgreSQL (any recent version)
 - A Supabase project with a **public** storage bucket named `winku` that contains `default/pfp.jpg` and `default/cover.jpg` (the images new users start with)
 
-### 1. Install dependencies
+### Setup
 
 ```sh
 npm install
+cp .env.example .env    # then fill it in
+npm run dev             # restarts on file changes; `npm start` for production
 ```
 
-### 2. Start a database
-
-If you don't have PostgreSQL installed, run one in Docker (use the same password you put in `.env`):
-
-```sh
-docker run -d --name jupiter-db -e POSTGRES_PASSWORD=<your-db-password> -p 127.0.0.1:5432:5432 -v jupiter-db-data:/var/lib/postgresql/data postgres:17-alpine
-```
-
-### 3. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```env
-PORT=8080
-CORS=http://localhost:5173
-
-HOST=localhost
-USER_NAME=postgres
-PASSWORD=<your-db-password>
-DB_NAME=postgres
-
-ACCESS_TOKEN_SECRET=<long-random-string>
-REFRESH_TOKEN_SECRET=<another-long-random-string>
-
-SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_KEY=<supabase-key>
-SUPABASE_IMAGE_URL=https://<project-ref>.supabase.co/storage/v1/object/public/
-```
+Then open `http://localhost:8080/`; you should see `{"message":"Welcome to the Jupiter API."}`.
 
 | Variable | Description |
 | --- | --- |
-| `PORT` | Port the API listens on (default `7070`) |
+| `PORT` | Port the API listens on (default `7070`; `.env.example` uses `8080`) |
 | `CORS` | URL of the frontend allowed to call the API, e.g. `http://localhost:5173` |
-| `HOST`, `USER_NAME`, `PASSWORD`, `DB_NAME` | PostgreSQL connection. `HOST` defaults to `localhost` |
+| `HOST`, `USER_NAME`, `PASSWORD`, `DB_NAME` | PostgreSQL connection. `HOST` defaults to `localhost` (`db` under docker compose) |
 | `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET` | Secrets for signing JWTs. Use long random values, e.g. `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
 | `SUPABASE_URL` | Your Supabase project URL |
 | `SUPABASE_KEY` | A key that can upload to and delete from the `winku` bucket. The service role key is simplest; keep it secret |
 | `SUPABASE_IMAGE_URL` | Public storage URL, ending in `/storage/v1/object/public/` |
-| `NODE_ENV` | Set to `production` when deployed |
-| `TRUST_PROXY` | Number of proxies in front of the app (defaults to `1` in production, off otherwise). Needed so rate limits see real client IPs on hosts like Render |
+| `NODE_ENV` | Set to `production` when deployed (also makes the refresh cookie `Secure`) |
+| `TRUST_PROXY` | Number of proxies in front of the app (defaults to `1` in production, off otherwise). Needed so rate limits see real client IPs |
+| `REFRESH_COOKIE_SAMESITE` | `lax` by default. Use `none` only if the frontend calls the API cross-site without a proxy |
+| `REFRESH_COOKIE_SECURE` | Overrides the `Secure` flag (`true`/`false`) |
 
-Never commit `.env`; it is already in `.gitignore`.
+Never commit `.env`; it is in `.gitignore`.
 
-### 4. Run the server
+### Database and migrations
+
+On startup the server applies any pending migrations from `app/migrations` (tracked in the `SequelizeMeta` table), so an empty database gets all tables and the `user` / `moderator` / `admin` roles. It also repoints default profile/cover images to the Supabase project in `.env`.
 
 ```sh
-npm run dev    # restarts on file changes (nodemon)
-npm start      # plain node, for production
+npm run migrate        # apply pending migrations without starting the server
+npm run migrate:down   # undo the last migration
 ```
 
-On startup the server:
+To change the schema, add a new file in `app/migrations` (never edit an applied one) and update the model in `app/models`.
 
-- creates any missing tables,
-- adds the `user`, `moderator` and `admin` roles if they don't exist (new users get `user`),
-- fixes data left by older versions (default images pointing at an old Supabase project, the old "TV Model" default job).
+### Tests
 
-Then open `http://localhost:8080/`; you should see `{"message":"Welcome to the Jupiter API."}`.
+```sh
+npm test                              # unit tests: no database or server needed
+npm run test:e2e                      # end-to-end against a running API (API_URL, default http://localhost:8080)
+RUN_UPLOAD_TESTS=1 npm run test:e2e   # also image uploads against the Supabase bucket (deletes what it uploads)
+```
+
+The end-to-end tests sign up their own users on each run, and are skipped if the API isn't reachable.
 
 ## API
 
-All routes except signup, signin, refresh and `/` need an `Authorization: Bearer <accessToken>` header.
+All routes except signup, signin, refresh, logout and `/` need an `Authorization: Bearer <accessToken>` header.
 
 ### Auth
 
 | Method | Route | Body / notes |
 | --- | --- | --- |
 | POST | `/api/auth/signup` | `{ fname, username, email, password }`. Username: 3-20 letters, numbers, `_` or `.`. Password: 8-72 characters with a number, a lowercase and an uppercase letter and a symbol |
-| POST | `/api/auth/signin` | `{ username, password }`. Returns the user plus `accessToken` (1 hour) and `refreshToken` (1 day) |
-| POST | `/api/auth/refresh` | `{ refreshToken }`. Returns a new `accessToken` |
+| POST | `/api/auth/signin` | `{ username, password }`. Returns the user plus an `accessToken` (1 hour), and sets the refresh-token cookie `jupiter_rt` (httpOnly, 1 day) |
+| POST | `/api/auth/refresh` | No body; uses the cookie (send requests with credentials). Returns a new `accessToken` |
+| POST | `/api/auth/logout` | Clears the refresh-token cookie |
 
 ### Users
 
@@ -175,13 +163,21 @@ app/
   controllers/            Route handlers (auth, users, posts, likes, comments, friends, messages, uploads)
   helpers/messages.js     Shared message rules (length limit, friendship check)
   middleware/             JWT check, input validation, rate limits, upload + image compression
+  migrate.js              Migration runner (umzug)
+  migrations/             Versioned schema changes
   models/                 Sequelize models and relations
   routes/                 Route definitions
   socket/chat.js          Real-time chat handlers
+  utils/refreshCookie.js  Refresh-token cookie settings
+test/
+  unit/                   Tests that need no database or server
+  e2e/                    Tests against a running API
 ```
 
 ## Deployment notes
 
 - Set `NODE_ENV=production`, and set `CORS` to the deployed frontend URL.
+- Serve the API to the browser through the frontend's domain (the frontend's `vercel.json` proxies `/api`), so the refresh cookie is first-party; otherwise set `REFRESH_COOKIE_SAMESITE=none`, which some browsers (e.g. Safari) block.
+- Migrations run on startup, so deploying a new version updates the database schema.
 - If the host runs more than one proxy in front of the app, set `TRUST_PROXY` to that number.
 - Images are stored in Supabase, so the server itself keeps no files.
