@@ -80,6 +80,14 @@ npm run migrate:down   # undo the last migration
 
 To change the schema, add a new file in `app/migrations` (never edit an applied one) and update the model in `app/models`.
 
+### Demo data
+
+```sh
+npm run seed   # or: docker compose exec api npm run seed
+```
+
+Creates twelve demo students (usernames `ani`, `leo`, `sara`, … with the password `Jupiter-demo1`) with friendships, pending requests, posts, comments, likes and chats, with activity timed relative to now. The pictures are generated with `sharp` and uploaded to `demo/` in the bucket (or the default images are used if that fails). Demo accounts use `@demo.jupiter.test` email addresses; re-running deletes and recreates only those. The data lives in `seed/data.js`.
+
 ### Tests
 
 ```sh
@@ -139,7 +147,7 @@ All routes except signup, signin, refresh, logout and `/` need an `Authorization
 | Method | Route | Body / notes |
 | --- | --- | --- |
 | GET | `/api/friends` | Your friends |
-| GET | `/api/unassociated-users` | Suggestions: users who aren't friends and have no pending request |
+| GET | `/api/unassociated-users` | Suggestions: users who aren't friends and have no pending request, ranked by `mutualFriends` (then newest) |
 | DELETE | `/api/delete-friend/:friendId` | Remove a friend |
 | GET | `/api/requests` | Friend requests sent to you |
 | POST | `/api/send-request` | `{ receiverId }`. Rejected if they already sent you a request (accept theirs instead) |
@@ -182,6 +190,7 @@ app/
   socket/chat.js          Real-time chat handlers
   socket/presence.js      Online status from open connections
   utils/refreshCookie.js  Refresh-token cookie settings
+seed/                     Demo data (npm run seed) and its generated pictures
 test/
   unit/                   Tests that need no database or server
   e2e/                    Tests against a running API

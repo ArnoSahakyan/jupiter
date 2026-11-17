@@ -4,13 +4,27 @@ A small social network for students: share posts and photos, find friends and ch
 
 Built with **React + TypeScript** on the front end and **Node.js + Express + PostgreSQL** on the back end, with **Socket.IO** for live chat and **Supabase Storage** for images.
 
+![News feed](docs/screenshots/newsfeed.webp)
+
+| Profile | Messages |
+| --- | --- |
+| ![Profile](docs/screenshots/profile.webp) | ![Messages](docs/screenshots/messages.webp) |
+| **Photos** | **Log in** |
+| ![Photos](docs/screenshots/photos.webp) | ![Log in](docs/screenshots/login.webp) |
+
+On phones it's a single column with a slide-out menu:
+
+![Phone: feed, profile and chat](docs/screenshots/phone.webp)
+
+The screenshots show the [demo data](#demo-data).
+
 ## Features
 
 - Sign up and log in; sessions renew silently
 - Profiles with name, job, profile picture and cover photo; open anyone's profile to see their posts, photos and friends, and add them as a friend or message them
 - Posts with text and/or a photo, likes, comments and replies
 - Newsfeed, and a Photos page with your images
-- Friend requests, friend suggestions and user search
+- Friend requests, suggestions ranked by mutual friends, and user search
 - Private one-to-one real-time chat with friends, with saved history
 - Online / away / offline status
 - Responsive: three columns on desktop, two on tablets, one on phones
@@ -44,6 +58,16 @@ docker compose up --build
 Open http://localhost:5173. The API is at http://localhost:8080. Code changes in `frontend/` and `backend/` reload automatically.
 
 The database is created on first start (tables, roles), using the name, user and password from `backend/.env`.
+
+### Demo data
+
+A new database is empty. To fill it with a small university network (twelve students with friendships, posts with pictures, comments, likes and chats):
+
+```sh
+docker compose exec api npm run seed
+```
+
+Then log in as **`ani`** with the password **`Jupiter-demo1`** (every demo account uses it; usernames are `ani`, `leo`, `sara`, `david`, `maya`, `omar`, `nina`, `tom`, `lucy`, `hana`, `karen`, `ben`). Running it again replaces the demo data; other accounts are left alone. The avatars, covers and post pictures are drawn by the script and uploaded to the bucket's `demo/` folder. Without Docker, run `npm run seed` in `backend/`.
 
 ## Running without Docker
 

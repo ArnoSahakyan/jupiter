@@ -8,11 +8,12 @@
     "dev": "nodemon server.js",
     "migrate": "node app/migrate.js",
     "migrate:down": "node app/migrate.js down",
+    "seed": "node seed/index.js",
     "test": "node --test \"test/unit/**/*.test.js\"",
     "test:e2e": "node --test --test-concurrency=1 \"test/e2e/**/*.test.js\""
   },
   "nodemonConfig": {
-    "ignore": ["test/*"]
+    "ignore": ["test/*", "seed/*"]
   },
   "keywords": [
     "node js",
