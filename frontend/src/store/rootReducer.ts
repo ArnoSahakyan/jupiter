@@ -1,7 +1,7 @@
-import { combineReducers } from "@reduxjs/toolkit";
+import { UnknownAction, combineReducers } from "@reduxjs/toolkit";
 import friendsSlice from "./features/friends/friendsSlice";
 import postSlice from "./features/post/postSlice";
-import userInfoSlice from "./features/userInfo/userInfoSlice";
+import userInfoSlice, { userLogout } from "./features/userInfo/userInfoSlice";
 import storage from 'redux-persist/lib/storage';
 import persistReducer from "redux-persist/es/persistReducer";
 import { createMigrate, PersistedState } from "redux-persist";
@@ -28,10 +28,18 @@ export const userInfoPersistConfig = {
   blacklist: ['error']
 };
 
-export const rootReducer = combineReducers({
+const appReducer = combineReducers({
   friends_request: friendsSlice,
   posts: postSlice,
   userInfo: persistReducer(userInfoPersistConfig, userInfoSlice),
 });
+
+// On logout, drop the posts and friends of the account that was signed in,
+// so the next account doesn't see them (userInfo clears itself).
+export const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) =>
+  appReducer(
+    userLogout.match(action) && state ? { userInfo: state.userInfo } as ReturnType<typeof appReducer> : state,
+    action
+  );
 
 export default rootReducer;
