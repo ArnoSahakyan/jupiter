@@ -7,6 +7,7 @@ import { AppDispatch } from '../../../store/setup'
 import PersonCard from '../../../components/PersonCard/PersonCard'
 import FriendSkeleton from '../../../components/shared/Skeletons/FriendSkeleton'
 import ROUTES from '../../../routes/routes'
+import { mutualLabel } from '../../../hooks/mutualLabel'
 import './FriendsPage.scss'
 
 type Tab = 'friends' | 'requests' | 'find'
@@ -154,7 +155,7 @@ export default function FriendsPage() {
                     id={person.id}
                     name={person.fname}
                     pfp={person.pfp}
-                    detail={person.job || `@${person.username}`}
+                    detail={[person.job, mutualLabel(person.mutualFriends)].filter(Boolean).join(' · ') || `@${person.username}`}
                     actions={sent.has(person.id)
                       ? <button type='button' className='person-button secondary' disabled>Request sent</button>
                       : <button type='button' className='person-button primary' disabled={busy(person.id)} onClick={() => add(person.id)}>Add friend</button>}

@@ -119,10 +119,32 @@ exports.getUnassociatedUsers = async (req, res) => {
       where: {
         id: { [db.Sequelize.Op.notIn]: Array.from(associatedUserIds) }
       },
-      attributes: ['id', 'fname', 'username', 'job', 'pfp'] // Adjust attributes as necessary
+      attributes: ['id', 'fname', 'username', 'job', 'pfp', 'createdAt'],
+      order: [['createdAt', 'DESC']],
+      raw: true
     });
 
-    res.status(200).json(unassociatedUsers);
+    // Rank by friends in common ("people you may know"), newest accounts first on ties.
+    const myFriends = friends.map(f => (f.userId === userId ? f.friendId : f.userId));
+    const mutual = new Map();
+    if (myFriends.length) {
+      const theirFriendships = await db.friend.findAll({
+        where: { [db.Sequelize.Op.or]: [{ userId: myFriends }, { friendId: myFriends }] },
+        attributes: ['userId', 'friendId'],
+        raw: true
+      });
+      const mine = new Set(myFriends);
+      theirFriendships.forEach(({ userId: a, friendId: b }) => {
+        if (mine.has(a) && !mine.has(b)) mutual.set(b, (mutual.get(b) || 0) + 1);
+        if (mine.has(b) && !mine.has(a)) mutual.set(a, (mutual.get(a) || 0) + 1);
+      });
+    }
+
+    const ranked = unassociatedUsers
+      .map(({ id, fname, username, job, pfp }) => ({ id, fname, username, job, pfp, mutualFriends: mutual.get(id) || 0 }))
+      .sort((a, b) => b.mutualFriends - a.mutualFriends); // stable, so ties keep newest first
+
+    res.status(200).json(ranked);
   } catch (error) {
     console.error('Error fetching unassociated users:', error);
     res.status(500).json({ error: 'Error fetching unassociated users' });

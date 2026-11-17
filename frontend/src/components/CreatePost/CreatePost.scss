@@ -43,6 +43,12 @@
       flex-direction: column;
       gap: 20px;
 
+      // empty when there's no error or picture; don't leave a gap
+      .input-wrapper:empty,
+      .preview:empty {
+        display: none;
+      }
+
       .preview {
         width: 100%;
 

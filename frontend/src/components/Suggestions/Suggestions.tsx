@@ -5,6 +5,7 @@ import { getUnassociated } from '../../store/features/friends/friendsSlice'
 import { getUnassociatedApi, sendRequest } from '../../store/features/friends/friendThunks'
 import { profilePath } from '../../routes/routes'
 import { AppDispatch } from '../../store/setup'
+import { mutualLabel } from '../../hooks/mutualLabel'
 import './Suggestions.scss'
 
 const SHOWN = 4
@@ -43,7 +44,7 @@ export default function Suggestions() {
               <img src={person.pfp} alt='' />
               <span>
                 <strong>{person.fname}</strong>
-                <span>{person.job || `@${person.username}`}</span>
+                <span>{mutualLabel(person.mutualFriends) ?? (person.job || `@${person.username}`)}</span>
               </span>
             </Link>
             {sent.has(person.id)

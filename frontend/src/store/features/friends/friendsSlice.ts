@@ -36,6 +36,7 @@ export type Tunassocitaed = {
   username: string
   job: string,
   pfp: string,
+  mutualFriends?: number, // friends you have in common
 }
 
 type TUsers = {
